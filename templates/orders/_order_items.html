@@ -1,0 +1,25 @@
+{% load persian %}
+<div class="order-items-detail">
+    {% for item in order.items.all %}
+        <div class="order-item-row">
+            <div class="order-item-img">
+                {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.product_name }}">{% else %}<i class="ri-image-line"></i>{% endif %}
+            </div>
+            <div class="order-item-info">
+                {% if item.product %}
+                    <a href="{{ item.product.get_absolute_url }}" class="order-item-name">{{ item.product_name }}</a>
+                {% else %}
+                    <span class="order-item-name">{{ item.product_name }}</span>
+                {% endif %}
+                <div class="order-item-attrs">
+                    {% if item.brand_name %}<span><i class="ri-store-2-line"></i> {{ item.brand_name }}</span>{% endif %}
+                    {% if item.color_name %}<span><i class="ri-palette-line"></i> {{ item.color_name }}</span>{% endif %}
+                    {% if item.size_name %}<span><i class="ri-ruler-line"></i> سایز {{ item.size_name }}</span>{% endif %}
+                    <span><i class="ri-price-tag-3-line"></i> {{ item.unit_price|toman }} تومان</span>
+                </div>
+            </div>
+            <div class="order-item-qty">تعداد: {{ item.quantity|persian_digits }}</div>
+            <div class="order-item-subtotal">{{ item.subtotal|toman }} تومان</div>
+        </div>
+    {% endfor %}
+</div>

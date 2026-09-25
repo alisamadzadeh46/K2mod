@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ثبت نام | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="auth-page">
+        <div class="auth-brand-panel">
+            <div class="auth-brand-logo"><i class="ri-gift-2-line"></i> k2mod</div>
+            <p>چند ثانیه‌ای عضو فروشگاه k2mod شوید و از تخفیف‌های ویژه اعضا بهره‌مند شوید.</p>
+            <div class="auth-brand-features">
+                <div><i class="ri-price-tag-3-line"></i> تخفیف‌های مخصوص اعضا</div>
+                <div><i class="ri-history-line"></i> پیگیری آسان سفارش‌ها</div>
+                <div><i class="ri-map-pin-line"></i> ذخیره چند آدرس ارسال</div>
+            </div>
+        </div>
+
+        <div class="auth-form-panel">
+            <div class="auth-card">
+                <h1>ساخت حساب کاربری</h1>
+                <p class="subtitle">اطلاعات زیر را تکمیل کنید</p>
+
+                <div class="auth-tabs">
+                    <a href="{% url 'accounts:login' %}">ورود</a>
+                    <a href="{% url 'accounts:register' %}" class="active">ثبت نام</a>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <label for="{{ form.full_name.id_for_label }}">نام و نام خانوادگی</label>
+                        {{ form.full_name }}
+                        {{ form.full_name.errors }}
+                    </div>
+                    <div class="input-group">
+                        <label for="{{ form.phone_number.id_for_label }}">شماره موبایل</label>
+                        {{ form.phone_number }}
+                        {{ form.phone_number.errors }}
+                    </div>
+                    <div class="input-group">
+                        <label for="{{ form.email.id_for_label }}">ایمیل</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="input-group">
+                        <label for="{{ form.password1.id_for_label }}">رمز عبور</label>
+                        {{ form.password1 }}
+                        {{ form.password1.errors }}
+                    </div>
+                    <div class="input-group">
+                        <label for="{{ form.password2.id_for_label }}">تکرار رمز عبور</label>
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+                    </div>
+                    <button type="submit" class="submit-btn">ثبت نام</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

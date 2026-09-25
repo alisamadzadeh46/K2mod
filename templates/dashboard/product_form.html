@@ -1,0 +1,157 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load static %}
+{% block title %}{% if object %}ویرایش محصول{% else %}افزودن محصول{% endif %} | پنل مدیریت{% endblock %}
+{% block extra_js %}<script src="{% static 'js/dashboard-form.js' %}"></script>{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>{% if object %}ویرایش محصول{% else %}افزودن محصول جدید{% endif %}</h1></div>
+    </div>
+
+    <div class="db-card">
+        <div class="db-card-header"><h2>اطلاعات محصول</h2></div>
+        <div class="db-card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors }}</div>{% endif %}
+                <div class="db-form-grid">
+                    <div class="db-form-group">
+                        <label for="{{ form.name.id_for_label }}">نام محصول</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.category.id_for_label }}">دسته‌بندی</label>
+                        <div class="db-field-with-add">
+                            {{ form.category }}
+                            <button type="button" class="db-quick-add" data-quick-add="category"
+                                    data-url="{% url 'dashboard:category_create' %}" title="افزودن دسته‌بندی جدید">
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </div>
+                        {{ form.category.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.brand.id_for_label }}">برند (اختیاری)</label>
+                        <div class="db-field-with-add">
+                            {{ form.brand }}
+                            <button type="button" class="db-quick-add" data-quick-add="brand"
+                                    data-url="{% url 'dashboard:brand_create' %}" title="افزودن برند جدید">
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.price.id_for_label }}">قیمت (تومان)</label>
+                        {{ form.price }}
+                        {{ form.price.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.old_price.id_for_label }}">قیمت قبل از تخفیف (اختیاری)</label>
+                        {{ form.old_price }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.stock.id_for_label }}">موجودی</label>
+                        {{ form.stock }}
+                        {{ form.stock.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.badge.id_for_label }}">برچسب</label>
+                        {{ form.badge }}
+                    </div>
+                    <div class="db-form-group">
+                        <label><i class="ri-ruler-line"></i> سایزهای موجود <span class="db-field-hint">(برای پوشاک)</span></label>
+                        <div class="db-chip-select">{{ form.sizes }}</div>
+                    </div>
+                    <div class="db-form-group">
+                        <label>
+                            <i class="ri-palette-line"></i> رنگ‌های موجود
+                            <button type="button" class="db-quick-add" data-quick-add="color-chip"
+                                    data-url="{% url 'dashboard:color_create' %}" title="افزودن رنگ جدید">
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </label>
+                        <div class="db-chip-select" id="colorChips">{{ form.colors }}</div>
+                    </div>
+                    <label class="db-checkbox">{{ form.is_active }} <span>فعال باشد</span></label>
+                    <label class="db-checkbox">{{ form.is_featured }} <span>نمایش در صفحه اصلی</span></label>
+                    <div class="db-form-group full-width">
+                        <label for="{{ form.description.id_for_label }}">توضیحات محصول</label>
+                        {{ form.description }}
+                    </div>
+                </div>
+
+                <div class="db-form-section" id="seoSection">
+                    <h3><i class="ri-search-eye-line"></i> تنظیمات سئو (SEO)</h3>
+
+                    <div class="seo-preview">
+                        <span class="seo-preview-label">پیش‌نمایش نتیجه گوگل</span>
+                        <div class="seo-preview-title" id="seoPreviewTitle">عنوان محصول</div>
+                        <div class="seo-preview-url">k2.shop › <span id="seoPreviewSlug">product</span></div>
+                        <div class="seo-preview-desc" id="seoPreviewDesc">توضیحات متا اینجا نمایش داده می‌شود…</div>
+                    </div>
+
+                    <div class="db-form-grid">
+                        <div class="db-form-group">
+                            <label for="{{ form.slug.id_for_label }}">نشانی صفحه (slug)</label>
+                            {{ form.slug }}
+                            <span class="helptext">{{ form.slug.help_text }}</span>
+                        </div>
+                        <div class="db-form-group">
+                            <label for="{{ form.meta_title.id_for_label }}">{{ form.meta_title.label }} <span class="seo-counter" id="titleCounter"></span></label>
+                            {{ form.meta_title }}
+                            <span class="helptext">{{ form.meta_title.help_text }}</span>
+                        </div>
+                        <div class="db-form-group full-width">
+                            <label for="{{ form.meta_description.id_for_label }}">{{ form.meta_description.label }} <span class="seo-counter" id="descCounter"></span></label>
+                            {{ form.meta_description }}
+                            <span class="helptext">{{ form.meta_description.help_text }}</span>
+                        </div>
+                    </div>
+
+                    <ul class="seo-checks" id="seoChecks"></ul>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 22px;">
+                    {% if object %}<i class="ri-edit-2-line"></i> ویرایش محصول{% else %}<i class="ri-save-line"></i> ذخیره محصول{% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if object %}
+        <div class="db-card">
+            <div class="db-card-header"><h2>تصاویر محصول</h2></div>
+            <div class="db-card-body">
+                <div class="db-image-grid">
+                    {% for image in object.images.all %}
+                        <div class="db-image-thumb">
+                            <img src="{{ image.image.url }}" alt="{{ image.alt_text }}">
+                            <form method="post" action="{% url 'dashboard:product_delete_image' object.pk image.pk %}"
+                                  onsubmit="return confirm('این تصویر حذف شود؟');">
+                                {% csrf_token %}
+                                <button type="submit" class="db-image-del" title="حذف تصویر" aria-label="حذف تصویر">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        <p class="db-image-empty">هنوز تصویری برای این محصول آپلود نشده است.</p>
+                    {% endfor %}
+                </div>
+                <form method="post" action="{% url 'dashboard:product_upload_image' object.pk %}" enctype="multipart/form-data" class="file-upload" id="imageUploadZone">
+                    {% csrf_token %}
+                    <div class="upload-icon"><i class="ri-image-add-line"></i></div>
+                    <p class="upload-title">تصویر محصول را اینجا رها کنید</p>
+                    <p class="upload-hint">یا از دکمه‌ی زیر برای انتخاب فایل استفاده کنید (JPG, PNG, WEBP)</p>
+                    <input type="file" name="image" accept="image/*" required hidden id="imageInput">
+                    <div class="upload-actions">
+                        <button type="button" class="btn btn-outline" id="imagePickBtn"><i class="ri-folder-image-line"></i> انتخاب فایل</button>
+                        <span class="upload-filename" id="uploadFilename">فایلی انتخاب نشده</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 14px;"><i class="ri-upload-2-line"></i> آپلود تصویر</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

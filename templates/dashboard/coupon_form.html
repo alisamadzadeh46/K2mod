@@ -1,0 +1,67 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load static %}
+{% block title %}{% if object %}ویرایش{% else %}افزودن{% endif %} کد تخفیف | پنل مدیریت{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/dashboard-form.js' %}"></script>
+    <script src="{% static 'js/jalali-datepicker.js' %}"></script>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>{% if object %}ویرایش کد تخفیف{% else %}افزودن کد تخفیف جدید{% endif %}</h1></div>
+        <a href="{% url 'dashboard:coupon_list' %}" class="btn btn-outline"><i class="ri-arrow-right-line"></i> بازگشت</a>
+    </div>
+
+    <div class="db-card" style="max-width:640px;margin-inline:auto;">
+        <div class="db-card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors }}</div>{% endif %}
+                <div class="db-form-grid">
+                    <div class="db-form-group{% if form.code.errors %} has-error{% endif %}">
+                        <label for="{{ form.code.id_for_label }}">کد تخفیف</label>
+                        {{ form.code }}
+                        {{ form.code.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.discount_type.id_for_label }}">نوع تخفیف</label>
+                        {{ form.discount_type }}
+                    </div>
+                    {% comment %}One grid cell holding BOTH fields — only one is ever visible (toggled by dashboard-form.js), but the cell itself always stays reserved so hiding a field can't collapse the grid and shove every later label/field into the wrong column.{% endcomment %}
+                    <div class="db-discount-value-slot">
+                        <div class="db-form-group{% if form.percent.errors %} has-error{% endif %}" id="percentGroup">
+                            <label for="{{ form.percent.id_for_label }}">درصد تخفیف</label>
+                            {{ form.percent }}
+                            {{ form.percent.errors }}
+                        </div>
+                        <div class="db-form-group{% if form.amount.errors %} has-error{% endif %}" id="amountGroup">
+                            <label for="{{ form.amount.id_for_label }}">مبلغ تخفیف (تومان)</label>
+                            {{ form.amount }}
+                            {{ form.amount.errors }}
+                        </div>
+                    </div>
+                    <div class="db-form-group{% if form.valid_from.errors %} has-error{% endif %}">
+                        <label for="{{ form.valid_from.id_for_label }}">معتبر از تاریخ (شمسی)</label>
+                        {{ form.valid_from }}
+                        <span class="helptext">اختیاری — مثال: ۱۴۰۴/۰۴/۱۵ ۱۴:۳۰</span>
+                        {{ form.valid_from.errors }}
+                    </div>
+                    <div class="db-form-group{% if form.valid_until.errors %} has-error{% endif %}">
+                        <label for="{{ form.valid_until.id_for_label }}">معتبر تا تاریخ (شمسی)</label>
+                        {{ form.valid_until }}
+                        <span class="helptext">اختیاری — مثال: ۱۴۰۴/۰۵/۱۵ ۲۳:۵۹</span>
+                        {{ form.valid_until.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.max_uses.id_for_label }}">حداکثر دفعات استفاده</label>
+                        {{ form.max_uses }}
+                    </div>
+                    <label class="db-checkbox">{{ form.is_active }} <span>فعال باشد</span></label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;">
+                    <i class="ri-save-line"></i> {% if object %}ویرایش{% else %}ذخیره{% endif %} کد تخفیف
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}پرسش‌های متداول | k2mod{% endblock %}
+{% block meta_description %}پاسخ پرسش‌های پرتکرار درباره‌ی خرید، ارسال، پرداخت و بازگشت کالا در فروشگاه اینترنتی k2mod.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="{% url 'catalog:home' %}">خانه</a> / <span>پرسش‌های متداول</span>
+    </div>
+
+    <section class="page-hero">
+        <span class="page-hero-icon"><i class="ri-question-answer-line"></i></span>
+        <h1>پرسش‌های متداول</h1>
+        <p>هر آنچه لازم است درباره‌ی خرید از k2mod بدانید. اگر پاسخ سؤالتان را پیدا نکردید، تیم پشتیبانی ما همیشه در کنار شماست.</p>
+    </section>
+
+    <div class="page-body">
+        <div class="faq-list">
+            <details class="faq-item" open>
+                <summary><i class="ri-shopping-bag-3-line faq-q-icon"></i> چطور می‌توانم سفارش ثبت کنم؟</summary>
+                <div class="faq-answer">کافی است محصول موردنظرتان را انتخاب کرده و به سبد خرید اضافه کنید. سپس وارد سبد خرید شوید، آدرس تحویل را انتخاب کنید و سفارش را نهایی نمایید. برای ثبت سفارش باید یک حساب کاربری (با شماره موبایل) داشته باشید.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-truck-line faq-q-icon"></i> ارسال سفارش چقدر طول می‌کشد؟</summary>
+                <div class="faq-answer">سفارش‌ها معمولاً بین ۲ تا ۵ روز کاری به دست شما می‌رسند. زمان دقیق بسته به شهر مقصد و روش ارسال متفاوت است. پس از ارسال، کد رهگیری مرسوله برای شما ثبت می‌شود.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-secure-payment-line faq-q-icon"></i> روش‌های پرداخت چگونه است؟</summary>
+                <div class="faq-answer">پرداخت به‌صورت آنلاین و از طریق درگاه امن بانکی انجام می‌شود. تمام تراکنش‌ها رمزنگاری‌شده و کاملاً امن هستند و اطلاعات کارت شما نزد ما ذخیره نمی‌شود.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-shield-check-line faq-q-icon"></i> آیا کالاها اصل و دارای ضمانت هستند؟</summary>
+                <div class="faq-answer">بله. تمام محصولات k2mod اصل بوده و از منابع معتبر تأمین می‌شوند. اصالت کالا تضمین می‌شود و در صورت مغایرت، امکان بازگشت وجود دارد.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-refund-2-line faq-q-icon"></i> اگر از خریدم راضی نبودم چه کنم؟</summary>
+                <div class="faq-answer">تا ۷ روز پس از دریافت کالا می‌توانید در صورت رعایت شرایط، درخواست بازگشت ثبت کنید. جزئیات کامل در صفحه‌ی <a href="{% url 'catalog:returns' %}" style="color:var(--primary);font-weight:600;">رویه بازگرداندن کالا</a> آمده است.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-map-pin-line faq-q-icon"></i> چطور آدرس‌هایم را مدیریت کنم؟</summary>
+                <div class="faq-answer">پس از ورود به حساب کاربری، از بخش «آدرس‌های من» می‌توانید چند آدرس ثبت کنید و آدرس پیش‌فرض خود را برای ارسال انتخاب نمایید.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-price-tag-3-line faq-q-icon"></i> آیا امکان پیگیری وضعیت سفارش وجود دارد؟</summary>
+                <div class="faq-answer">بله. از بخش «سفارش‌های من» در حساب کاربری، وضعیت هر سفارش (در انتظار پرداخت، پرداخت‌شده، ارسال‌شده یا تحویل‌شده) را لحظه‌به‌لحظه مشاهده می‌کنید.</div>
+            </details>
+
+            <details class="faq-item">
+                <summary><i class="ri-customer-service-2-line faq-q-icon"></i> چطور با پشتیبانی در ارتباط باشم؟</summary>
+                <div class="faq-answer">از طریق شماره تماس ۰۲۱-۱۲۳۴۵۶۷۸ یا ایمیل info@k2mod.ir در روزهای کاری پاسخگوی شما هستیم. همچنین می‌توانید در شبکه‌های اجتماعی با ما در ارتباط باشید.</div>
+            </details>
+        </div>
+
+        <div class="page-help">
+            <div>
+                <h3>پاسخ سؤالتان را پیدا نکردید؟</h3>
+                <p>تیم پشتیبانی k2mod آماده‌ی کمک به شماست.</p>
+            </div>
+            <a href="tel:02112345678" class="btn"><i class="ri-phone-line"></i> تماس با پشتیبانی</a>
+        </div>
+    </div>
+{% endblock %}

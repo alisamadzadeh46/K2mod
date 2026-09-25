@@ -1,0 +1,33 @@
+{% load persian %}
+{% if cart.items.all %}
+    {% for item in cart.items.all %}
+        <div class="cart-item" data-item-id="{{ item.id }}" data-quantity="{{ item.quantity }}">
+            <a href="{{ item.product.get_absolute_url }}" class="cart-item-thumb">
+                {% if item.product.primary_image %}
+                    <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                    <img src="" alt="{{ item.product.name }}">
+                {% endif %}
+            </a>
+            <div class="cart-item-info">
+                <a href="{{ item.product.get_absolute_url }}" class="cart-item-name">{{ item.product.name }}</a>
+                {% if item.color or item.size %}
+                    <div class="cart-item-variants">
+                        {% if item.color %}<span class="cart-item-badge"><span class="cart-swatch" style="background: {{ item.color.hex_code }}"></span>{{ item.color.name }}</span>{% endif %}
+                        {% if item.size %}<span class="cart-item-badge">سایز {{ item.size.name }}</span>{% endif %}
+                    </div>
+                {% endif %}
+                <div class="cart-item-controls">
+                    <div class="qty-controls">
+                        <button type="button" class="qty-decrease">-</button>
+                        <span>{{ item.quantity|persian_digits }}</span>
+                        <button type="button" class="qty-increase">+</button>
+                    </div>
+                    <button type="button" class="cart-item-remove"><i class="ri-delete-bin-6-line"></i> حذف</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="cart-empty">سبد خرید شما خالی است.</div>
+{% endif %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load persian %}
+{% block title %}سفارش ثبت شد | k2mod{% endblock %}
+
+{% block content %}
+    <div class="order-success">
+        <div class="order-success-icon"><i class="ri-checkbox-circle-fill"></i></div>
+        <h1>سفارش شما با موفقیت ثبت شد</h1>
+        <p class="order-success-sub">از خرید شما سپاسگزاریم. جزئیات سفارش در پایین آمده است.</p>
+
+        <div class="order-success-meta">
+            <div><span>شماره سفارش</span><strong>{{ order.id|persian_digits }}</strong></div>
+            <div><span>مبلغ</span><strong>{{ order.total_price|toman }} تومان</strong></div>
+            <div><span>وضعیت</span><strong>{{ order.get_status_display }}</strong></div>
+        </div>
+
+        <div class="order-success-actions">
+            <a href="{% url 'orders:detail' order.id %}" class="btn btn-primary">مشاهده جزئیات سفارش</a>
+            <a href="{% url 'orders:history' %}" class="btn btn-outline">سفارش‌های من</a>
+        </div>
+    </div>
+{% endblock %}

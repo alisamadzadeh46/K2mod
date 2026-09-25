@@ -1,0 +1,28 @@
+{% extends "accounts/account_base.html" %}
+{% block title %}اطلاعات حساب | k2mod{% endblock %}
+
+{% block account_content %}
+    <div class="account-card">
+        <h2 class="account-card-title">اطلاعات حساب</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="{{ form.full_name.id_for_label }}">نام و نام خانوادگی</label>
+                {{ form.full_name }}
+            </div>
+            <div class="input-group">
+                <label>شماره موبایل</label>
+                <input type="text" value="{{ user.phone_number }}" disabled>
+            </div>
+            <div class="input-group">
+                <label for="{{ form.email.id_for_label }}">ایمیل</label>
+                {{ form.email }}
+            </div>
+            <div class="input-group">
+                <label for="{{ form.avatar.id_for_label }}">تصویر پروفایل</label>
+                {{ form.avatar }}
+            </div>
+            <button type="submit" class="submit-btn" style="width: auto; padding-inline: 32px;">ذخیره تغییرات</button>
+        </form>
+    </div>
+{% endblock %}

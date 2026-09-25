@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static persian %}
+{% block title %}{{ collection_title }} | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/products.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="{% url 'catalog:home' %}">خانه</a> /
+        <span>{{ collection_title }}</span>
+    </div>
+
+    <div class="listing-toolbar">
+        <h1 style="font-size: 20px;">{{ collection_title }}</h1>
+        <span class="count">{{ paginator.count|persian_digits }} محصول</span>
+    </div>
+
+    {% if products %}
+        <div class="product-grid product-grid--wide">
+            {% for product in products %}{% include "catalog/_product_card.html" %}{% endfor %}
+        </div>
+
+        {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+                <span class="current">{{ page_obj.number|persian_digits }} از {{ page_obj.paginator.num_pages|persian_digits }}</span>
+                {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="empty-state">
+            <i class="ri-inbox-line" style="font-size: 48px;"></i>
+            <p>محصولی در این بخش یافت نشد.</p>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% load persian %}
+<div class="product-card">
+    {% if product.badge != "none" %}
+        <div class="product-badge">{{ product.get_badge_display }}</div>
+    {% endif %}
+    <button type="button" class="fav-btn {% if product.id in favorite_ids %}is-fav{% endif %}"
+            data-fav-url="{% url 'catalog:toggle_favorite' product.slug %}" aria-label="افزودن به علاقه‌مندی">
+        <i class="ri-heart-{% if product.id in favorite_ids %}fill{% else %}line{% endif %}"></i>
+    </button>
+    <a href="{{ product.get_absolute_url }}" class="product-image">
+        {% with image=product.primary_image %}
+            {% if image %}
+                <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}">
+            {% else %}
+                <i class="ri-image-line product-image-placeholder"></i>
+            {% endif %}
+        {% endwith %}
+    </a>
+    <div class="product-info">
+        <a href="{{ product.get_absolute_url }}">
+            <h3 class="product-title">{{ product.name }}</h3>
+        </a>
+        <div class="product-price">
+            <div>
+                <span class="current-price">{{ product.price|toman }} تومان</span>
+                {% if product.old_price %}
+                    <span class="old-price">{{ product.old_price|toman }}</span>
+                {% endif %}
+            </div>
+            {% if product.discount_percent %}
+                <span class="discount-tag">٪{{ product.discount_percent|persian_digits }}-</span>
+            {% endif %}
+        </div>
+        {% if product.in_stock %}
+            <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}">
+                <i class="ri-shopping-cart-line"></i> افزودن به سبد خرید
+            </button>
+        {% else %}
+            <button class="btn btn-outline" disabled>ناموجود</button>
+        {% endif %}
+    </div>
+</div>

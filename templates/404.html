@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}صفحه پیدا نشد | k2mod{% endblock %}
+
+{% block content %}
+    <section class="error-page">
+        <div class="error-visual" aria-label="خطای ۴۰۴">
+            <span class="error-digit">۴</span>
+            <span class="error-orb"><i class="ri-gift-2-line"></i></span>
+            <span class="error-digit">۴</span>
+        </div>
+        <h1 class="error-title">صفحه‌ای که دنبالش بودید پیدا نشد</h1>
+        <p class="error-text">
+            ممکن است این آدرس حذف شده، تغییر کرده یا اصلاً وجود نداشته باشد.
+            بیایید شما را به مسیر خرید برگردانیم.
+        </p>
+        <div class="error-actions">
+            <a href="{% url 'catalog:home' %}" class="btn btn-primary">
+                <i class="ri-home-4-line"></i> بازگشت به صفحه اصلی
+            </a>
+            <a href="#" class="btn btn-outline" onclick="history.back(); return false;">
+                <i class="ri-arrow-go-back-line"></i> صفحه قبلی
+            </a>
+        </div>
+        <div class="error-links">
+            {% for category in nav_categories|slice:":4" %}
+                <a href="{{ category.get_absolute_url }}">
+                    {% if category.icon_class %}<i class="{{ category.icon_class }}"></i>{% endif %}
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

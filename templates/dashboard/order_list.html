@@ -1,0 +1,43 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}سفارشات | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header"><div><h1>سفارشات</h1><p>{{ paginator.count|persian_digits }} سفارش ثبت شده</p></div></div>
+
+    <div class="db-card">
+        <div class="db-card-body" style="padding: 0;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>شماره سفارش</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th><th>عملیات</th></tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id|persian_digits }}</td>
+                            <td>{{ order.user }}</td>
+                            <td>{{ order.total_price|toman }} ت</td>
+                            <td><span class="status-badge {{ order.status }}">{{ order.get_status_display }}</span></td>
+                            <td>{{ order.created_at|jalali }}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'dashboard:order_detail' order.pk %}" class="action-btn edit"><i class="ri-eye-line"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6">سفارشی ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+            <span class="current">{{ page_obj.number|persian_digits }} از {{ page_obj.paginator.num_pages|persian_digits }}</span>
+            {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

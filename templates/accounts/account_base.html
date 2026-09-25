@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% if account_extra_css %}<link rel="stylesheet" href="{% static account_extra_css %}">{% endif %}{% endblock %}
+
+{% block content %}
+    <div class="account-layout">
+        <aside class="account-sidebar">
+            <div class="account-user">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="{{ user.get_full_name }}" class="account-avatar">
+                {% else %}
+                    <div class="account-avatar account-avatar--empty"><i class="ri-user-3-line"></i></div>
+                {% endif %}
+                <div>
+                    <strong>{{ user.get_full_name }}</strong>
+                    <span class="account-phone">{{ user.phone_number }}</span>
+                </div>
+            </div>
+
+            <nav class="account-menu">
+                <a href="{% url 'accounts:profile' %}" class="{% if active_account_tab == 'profile' %}active{% endif %}">
+                    <i class="ri-user-settings-line"></i> اطلاعات حساب
+                </a>
+                <a href="{% url 'orders:history' %}" class="{% if active_account_tab == 'orders' %}active{% endif %}">
+                    <i class="ri-file-list-3-line"></i> سفارش‌های من
+                </a>
+                <a href="{% url 'accounts:addresses' %}" class="{% if active_account_tab == 'addresses' %}active{% endif %}">
+                    <i class="ri-map-pin-line"></i> آدرس‌های من
+                </a>
+                <a href="{% url 'accounts:my_comments' %}" class="{% if active_account_tab == 'comments' %}active{% endif %}">
+                    <i class="ri-chat-3-line"></i> نظرات من
+                </a>
+                <a href="{% url 'accounts:favorites' %}" class="{% if active_account_tab == 'favorites' %}active{% endif %}">
+                    <i class="ri-heart-line"></i> محصولات مورد علاقه
+                </a>
+                {% if user.is_staff %}
+                    <a href="{% url 'dashboard:home' %}"><i class="ri-dashboard-line"></i> پنل مدیریت</a>
+                {% endif %}
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="account-logout"><i class="ri-logout-box-r-line"></i> خروج از حساب کاربری</button>
+                </form>
+            </nav>
+        </aside>
+
+        <div class="account-content">
+            {% block account_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

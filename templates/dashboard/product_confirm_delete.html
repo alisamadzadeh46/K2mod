@@ -1,0 +1,17 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block title %}حذف محصول | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="db-card" style="max-width: 480px; margin: 30px auto; text-align: center;">
+        <div class="db-card-body">
+            <i class="ri-error-warning-line" style="font-size: 40px; color: var(--db-danger);"></i>
+            <h2 style="margin: 14px 0;">حذف «{{ object.name }}»؟</h2>
+            <p style="color: var(--db-gray); margin-bottom: 20px;">این عملیات قابل بازگشت نیست.</p>
+            <form method="post" style="display: flex; gap: 10px; justify-content: center;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" style="background: var(--db-danger);">بله، حذف کن</button>
+                <a href="{% url 'dashboard:product_list' %}" class="btn btn-outline">انصراف</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

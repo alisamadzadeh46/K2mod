@@ -1,0 +1,36 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block title %}دسته‌بندی‌ها | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>دسته‌بندی‌ها</h1><p>مدیریت دسته‌بندی محصولات</p></div>
+        <a href="{% url 'dashboard:category_add' %}" class="btn btn-primary"><i class="ri-add-line"></i> افزودن دسته‌بندی</a>
+    </div>
+
+    <div class="db-card">
+        <div class="db-card-body" style="padding:0;">
+            <table class="data-table">
+                <thead><tr><th>نام</th><th>والد</th><th>آیکون</th><th>وضعیت</th><th>تعداد محصول</th><th>عملیات</th></tr></thead>
+                <tbody>
+                    {% for category in categories %}
+                        <tr>
+                            <td>{{ category.name }}</td>
+                            <td>{{ category.parent.name|default:"—" }}</td>
+                            <td>{% if category.icon_class %}<i class="{{ category.icon_class }}" style="font-size:18px;color:var(--db-primary);"></i>{% else %}—{% endif %}</td>
+                            <td><span class="status-badge {% if category.is_active %}active{% else %}low{% endif %}">{% if category.is_active %}فعال{% else %}غیرفعال{% endif %}</span></td>
+                            <td>{{ category.products.count }}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'dashboard:category_edit' category.pk %}" class="action-btn edit" title="ویرایش"><i class="ri-edit-line"></i></a>
+                                    <a href="{% url 'dashboard:category_delete' category.pk %}" class="action-btn delete" title="حذف"><i class="ri-delete-bin-line"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6">دسته‌بندی‌ای ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

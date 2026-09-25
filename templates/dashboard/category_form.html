@@ -1,0 +1,42 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block title %}{% if object %}ویرایش{% else %}افزودن{% endif %} دسته‌بندی | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>{% if object %}ویرایش دسته‌بندی{% else %}افزودن دسته‌بندی جدید{% endif %}</h1></div>
+        <a href="{% url 'dashboard:category_list' %}" class="btn btn-outline"><i class="ri-arrow-right-line"></i> بازگشت</a>
+    </div>
+
+    <div class="db-card" style="max-width:640px;margin-inline:auto;">
+        <div class="db-card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors }}</div>{% endif %}
+                <div class="db-form-grid">
+                    <div class="db-form-group full-width">
+                        <label for="{{ form.name.id_for_label }}">نام دسته‌بندی</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.parent.id_for_label }}">دسته‌بندی والد (اختیاری)</label>
+                        {{ form.parent }}
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.icon_class.id_for_label }}">کلاس آیکون (اختیاری)</label>
+                        {{ form.icon_class }}
+                        <span class="helptext">مثلاً ri-t-shirt-line — از remixicon.com</span>
+                    </div>
+                    <div class="db-form-group">
+                        <label for="{{ form.order.id_for_label }}">ترتیب نمایش</label>
+                        {{ form.order }}
+                    </div>
+                    <label class="db-checkbox">{{ form.is_active }} <span>فعال باشد</span></label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;">
+                    <i class="ri-save-line"></i> ذخیره دسته‌بندی
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

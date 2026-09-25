@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% load static persian %}
+{% block title %}{{ product.seo_title }}{% endblock %}
+{% block meta_description %}{{ product.seo_description }}{% endblock %}
+{% block seo_extra %}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ product.get_absolute_url }}">
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="{{ product.seo_title }}">
+    <meta property="og:description" content="{{ product.seo_description }}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ product.get_absolute_url }}">
+    {% if product.primary_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.primary_image.image.url }}">{% endif %}
+    <meta property="product:price:amount" content="{{ product.price }}">
+    <meta property="product:price:currency" content="IRT">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "{{ product.name|escapejs }}",
+        "description": "{{ product.seo_description|escapejs }}",
+        {% if product.brand %}"brand": {"@type": "Brand", "name": "{{ product.brand.name|escapejs }}"},{% endif %}
+        "offers": {
+            "@type": "Offer",
+            "price": "{{ product.price }}",
+            "priceCurrency": "IRR",
+            "availability": "https://schema.org/{% if product.in_stock %}InStock{% else %}OutOfStock{% endif %}"
+        }
+    }
+    </script>
+{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/products.css' %}"><link rel="stylesheet" href="{% static 'css/home.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="{% url 'catalog:home' %}">خانه</a> /
+        <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> /
+        <span>{{ product.name }}</span>
+    </div>
+
+    <div class="product-detail">
+        <div>
+            <div class="product-gallery-main">
+                {% with first_image=product.primary_image %}
+                    {% if first_image %}
+                        <img id="mainImage" src="{{ first_image.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <i class="ri-image-line product-image-placeholder" style="font-size: 64px; display: flex; align-items: center; justify-content: center; height: 100%;"></i>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            {% if product.images.count > 1 %}
+                <div class="product-gallery-thumbs">
+                    {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" onclick="document.getElementById('mainImage').src = this.src">
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="product-detail-info">
+            <div class="product-detail-heading">
+                <h1>{{ product.name }}</h1>
+                <button type="button" class="fav-btn-lg {% if product.id in favorite_ids %}is-fav{% endif %}"
+                        data-fav-url="{% url 'catalog:toggle_favorite' product.slug %}" aria-label="افزودن به علاقه‌مندی">
+                    <i class="ri-heart-{% if product.id in favorite_ids %}fill{% else %}line{% endif %}"></i>
+                </button>
+            </div>
+
+            <div class="product-quick-attrs">
+                <span><i class="ri-price-tag-3-line"></i> {{ product.category.name }}</span>
+                {% if product.brand %}<span><i class="ri-store-2-line"></i> {{ product.brand.name }}</span>{% endif %}
+                {% if product.colors.exists %}
+                    <span><i class="ri-palette-line"></i> {{ product.colors.count|persian_digits }} رنگ</span>
+                {% endif %}
+            </div>
+
+            <div class="product-availability {% if product.in_stock %}in{% else %}out{% endif %}">
+                <i class="{% if product.in_stock %}ri-checkbox-circle-line{% else %}ri-close-circle-line{% endif %}"></i>
+                {% if product.in_stock %}موجود در انبار{% else %}ناموجود{% endif %}
+            </div>
+
+            <div class="product-detail-price">
+                <span class="current-price">{{ product.price|toman }} تومان</span>
+                {% if product.old_price %}
+                    <span class="old-price">{{ product.old_price|toman }}</span>
+                    <span class="discount-tag">٪{{ product.discount_percent|persian_digits }}-</span>
+                {% endif %}
+            </div>
+
+            {% with sizes=product.sizes.all colors=product.colors.all %}
+                {% if colors %}
+                    <div class="product-color-picker">
+                        <span class="product-size-label">انتخاب رنگ:</span>
+                        <div class="product-color-options" id="colorOptions">
+                            {% for color in colors %}
+                                <button type="button" class="color-chip{% if forloop.first %} selected{% endif %}" data-color-id="{{ color.id }}" data-color-name="{{ color.name }}" title="{{ color.name }}">
+                                    <span class="color-swatch" style="background: {{ color.hex_code }}"></span>{{ color.name }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if sizes %}
+                    <div class="product-size-picker">
+                        <span class="product-size-label">انتخاب سایز:</span>
+                        <div class="product-size-options" id="sizeOptions">
+                            {% for size in sizes %}
+                                <button type="button" class="size-chip{% if forloop.first %} selected{% endif %}" data-size-id="{{ size.id }}">{{ size.name }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if product.in_stock %}
+                    <div class="product-detail-actions">
+                        <div class="quantity-stepper">
+                            <button type="button" id="qtyDecrease">-</button>
+                            <input type="number" id="qtyInput" value="1" min="1" max="{{ product.stock }}">
+                            <button type="button" id="qtyIncrease">+</button>
+                        </div>
+                        <button class="btn btn-primary" id="addToCartBtn" data-product-id="{{ product.id }}">
+                            <i class="ri-shopping-cart-line"></i> افزودن به سبد خرید
+                        </button>
+                    </div>
+                {% else %}
+                    <button class="btn btn-outline" disabled>ناموجود</button>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <section class="product-tabs">
+        <div class="product-tab-block">
+            <h2 class="product-tab-title"><i class="ri-article-line"></i> معرفی محصول</h2>
+            <div class="product-intro">
+                {{ product.description|safe|default:"توضیحاتی برای این محصول ثبت نشده است." }}
+            </div>
+        </div>
+
+        <div class="product-tab-block">
+            <h2 class="product-tab-title"><i class="ri-file-list-3-line"></i> مشخصات کالا</h2>
+            <table class="specs-table">
+                <tbody>
+                    <tr><th>دسته‌بندی</th><td>{{ product.category.name }}</td></tr>
+                    {% if product.brand %}<tr><th>برند</th><td>{{ product.brand.name }}</td></tr>{% endif %}
+                    {% with pcolors=product.colors.all %}{% if pcolors %}<tr><th>رنگ‌های موجود</th><td>{% for c in pcolors %}{{ c.name }}{% if not forloop.last %}، {% endif %}{% endfor %}</td></tr>{% endif %}{% endwith %}
+                    {% with psizes=product.sizes.all %}{% if psizes %}<tr><th>سایزهای موجود</th><td>{% for s in psizes %}{{ s.name }}{% if not forloop.last %}، {% endif %}{% endfor %}</td></tr>{% endif %}{% endwith %}
+                    {% if product.badge != "none" %}<tr><th>برچسب</th><td>{{ product.get_badge_display }}</td></tr>{% endif %}
+                    <tr><th>وضعیت موجودی</th><td>{% if product.in_stock %}موجود{% else %}ناموجود{% endif %}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="comments-section">
+        <h2 class="section-title">دیدگاه‌های کاربران ({{ comments|length|persian_digits }})</h2>
+
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'catalog:add_comment' product.slug %}" class="comment-form">
+                {% csrf_token %}
+                {{ comment_form.body }}
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">ثبت دیدگاه</button>
+            </form>
+        {% else %}
+            <p class="comment-login-prompt">
+                برای ثبت دیدگاه ابتدا <a href="{% url 'accounts:login' %}">وارد حساب کاربری</a> خود شوید.
+            </p>
+        {% endif %}
+
+        <div class="comments-list">
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <strong>{{ comment.user.get_full_name }}</strong>
+                        <span class="comment-date">{{ comment.created_at|jalali }}</span>
+                    </div>
+                    <p class="comment-body">{{ comment.body }}</p>
+
+                    {% for reply in comment.replies.all %}
+                        <div class="comment comment-reply">
+                            <div class="comment-header">
+                                <strong>{{ reply.user.get_full_name }}</strong>
+                                <span class="comment-staff-badge">پاسخ فروشگاه</span>
+                                <span class="comment-date">{{ reply.created_at|jalali }}</span>
+                            </div>
+                            <p class="comment-body">{{ reply.body }}</p>
+                        </div>
+                    {% endfor %}
+
+                    {% if user.is_staff and not comment.replies.all %}
+                        <form method="post" action="{% url 'catalog:reply_comment' product.slug comment.id %}" class="comment-reply-form">
+                            {% csrf_token %}
+                            <textarea name="body" rows="2" placeholder="پاسخ به عنوان فروشگاه..." required></textarea>
+                            <button type="submit" class="btn btn-outline">ارسال پاسخ</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p style="color: var(--text-muted);">هنوز دیدگاهی برای این محصول ثبت نشده است.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if related_products %}
+        <div class="related-products">
+            {% include "catalog/_product_rail.html" with rail_title="محصولات مرتبط" rail_products=related_products %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const qtyInput = document.getElementById("qtyInput");
+        const decreaseBtn = document.getElementById("qtyDecrease");
+        const increaseBtn = document.getElementById("qtyIncrease");
+        const addBtn = document.getElementById("addToCartBtn");
+
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener("click", () => {
+                qtyInput.value = Math.max(1, parseInt(qtyInput.value || "1", 10) - 1);
+            });
+        }
+        if (increaseBtn) {
+            increaseBtn.addEventListener("click", () => {
+                const max = parseInt(qtyInput.max || "999", 10);
+                qtyInput.value = Math.min(max, parseInt(qtyInput.value || "1", 10) + 1);
+            });
+        }
+        // Size chips: pick one, remember its id for add-to-cart.
+        let selectedSizeId = "";
+        const sizeOptions = document.getElementById("sizeOptions");
+        if (sizeOptions) {
+            const chips = sizeOptions.querySelectorAll(".size-chip");
+            if (chips.length) selectedSizeId = chips[0].dataset.sizeId;
+            sizeOptions.addEventListener("click", (e) => {
+                const chip = e.target.closest(".size-chip");
+                if (!chip) return;
+                chips.forEach((c) => c.classList.remove("selected"));
+                chip.classList.add("selected");
+                selectedSizeId = chip.dataset.sizeId;
+            });
+        }
+
+        // Colour chips: same interaction, remembers the chosen colour id.
+        let selectedColorId = "";
+        const colorOptions = document.getElementById("colorOptions");
+        if (colorOptions) {
+            const cchips = colorOptions.querySelectorAll(".color-chip");
+            if (cchips.length) selectedColorId = cchips[0].dataset.colorId;
+            colorOptions.addEventListener("click", (e) => {
+                const chip = e.target.closest(".color-chip");
+                if (!chip) return;
+                cchips.forEach((c) => c.classList.remove("selected"));
+                chip.classList.add("selected");
+                selectedColorId = chip.dataset.colorId;
+            });
+        }
+
+        if (addBtn) {
+            addBtn.addEventListener("click", () => {
+                const originalText = addBtn.innerHTML;
+                addToCart(addBtn.dataset.productId, parseInt(qtyInput.value || "1", 10), selectedSizeId, selectedColorId).then(() => {
+                    addBtn.innerHTML = "افزوده شد!";
+                    setTimeout(() => (addBtn.innerHTML = originalText), 1500);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

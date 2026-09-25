@@ -1,0 +1,76 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}سفارش {{ object.id|persian_digits }} | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>شماره سفارش: {{ object.id|persian_digits }}</h1><p>{{ object.user }} &middot; {{ object.created_at|jalali_datetime }}</p></div>
+        <a href="{% url 'dashboard:order_list' %}" class="btn btn-outline"><i class="ri-arrow-right-line"></i> بازگشت</a>
+    </div>
+
+    <div class="content-grid">
+        <div class="db-card">
+            <div class="db-card-header"><h2>اقلام سفارش</h2></div>
+            <div class="db-card-body">
+                {% for item in object.items.all %}
+                    <div class="db-order-item">
+                        <div class="db-order-item-img">
+                            {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.product_name }}">{% else %}<i class="ri-image-line"></i>{% endif %}
+                        </div>
+                        <div class="db-order-item-info">
+                            <strong>{{ item.product_name }}</strong>
+                            <div class="db-order-item-attrs">
+                                {% if item.brand_name %}<span>برند: {{ item.brand_name }}</span>{% endif %}
+                                {% if item.color_name %}<span>رنگ: {{ item.color_name }}</span>{% endif %}
+                                {% if item.size_name %}<span>سایز: {{ item.size_name }}</span>{% endif %}
+                                <span>قیمت واحد: {{ item.unit_price|toman }} ت</span>
+                                <span>تعداد: {{ item.quantity|persian_digits }}</span>
+                            </div>
+                        </div>
+                        <div class="db-order-item-sum">{{ item.subtotal|toman }} ت</div>
+                    </div>
+                {% endfor %}
+                <div class="db-order-cost-breakdown">
+                    <div class="row"><span>مبلغ کالاها</span><span>{{ object.items_total|toman }} تومان</span></div>
+                    {% if object.discount %}<div class="row discount"><span>تخفیف{% if object.coupon_code %} (کد {{ object.coupon_code }}){% endif %}</span><span>−{{ object.discount|toman }} تومان</span></div>{% endif %}
+                    <div class="row"><span>هزینه ارسال</span><span>{% if object.shipping_cost %}{{ object.shipping_cost|toman }} تومان{% else %}رایگان{% endif %}</span></div>
+                </div>
+                <div class="db-order-total">مبلغ کل: <strong>{{ object.total_price|toman }} تومان</strong></div>
+            </div>
+        </div>
+
+        <div>
+            <div class="db-card">
+                <div class="db-card-header"><h2>وضعیت سفارش</h2></div>
+                <div class="db-card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="db-form-group">
+                            <label for="{{ form.status.id_for_label }}">تغییر وضعیت</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="db-form-group">
+                            <label for="{{ form.shipping_carrier.id_for_label }}">شرکت حمل</label>
+                            {{ form.shipping_carrier }}
+                        </div>
+                        <div class="db-form-group">
+                            <label for="{{ form.tracking_code.id_for_label }}">کد رهگیری</label>
+                            {{ form.tracking_code }}
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px;">به‌روزرسانی</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="db-card">
+                <div class="db-card-header"><h2>آدرس ارسال</h2></div>
+                <div class="db-card-body">
+                    <p style="font-size:13px;line-height:1.9;color:var(--db-muted);">
+                        {{ object.address.receiver_full_name }} · {{ object.address.receiver_phone_number }}<br>
+                        {{ object.address.province }}، {{ object.address.city }} — {{ object.address.full_address }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

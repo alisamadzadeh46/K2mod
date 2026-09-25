@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ورود | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="auth-page">
+        <div class="auth-brand-panel">
+            <div class="auth-brand-logo"><i class="ri-gift-2-line"></i> k2mod</div>
+            <p>به فروشگاه اینترنتی k2mod خوش آمدید. سریع‌ترین راه برای خرید لوازم آرایشی، پوشاک و اکسسوری اصل.</p>
+            <div class="auth-brand-features">
+                <div><i class="ri-truck-line"></i> ارسال سریع به سراسر کشور</div>
+                <div><i class="ri-shield-check-line"></i> ضمانت اصالت کالا</div>
+                <div><i class="ri-customer-service-2-line"></i> پشتیبانی ۷ روز هفته</div>
+            </div>
+        </div>
+
+        <div class="auth-form-panel">
+            <div class="auth-card">
+                <h1>ورود به حساب کاربری</h1>
+                <p class="subtitle">با شماره موبایل خود وارد شوید</p>
+
+                <div class="auth-tabs">
+                    <a href="{% url 'accounts:login' %}" class="active">ورود</a>
+                    <a href="{% url 'accounts:register' %}">ثبت نام</a>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="message error">{{ form.non_field_errors }}</div>
+                    {% endif %}
+                    <div class="input-group">
+                        <label for="{{ form.username.id_for_label }}">شماره موبایل</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                    <div class="input-group">
+                        <label for="{{ form.password.id_for_label }}">رمز عبور</label>
+                        {{ form.password }}
+                        {{ form.password.errors }}
+                    </div>
+                    <div style="text-align:left;margin:-6px 0 16px;">
+                        <a href="{% url 'accounts:password_reset' %}" style="color:var(--primary);font-size:13px;font-weight:600;">رمز عبور را فراموش کرده‌اید؟</a>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <button type="submit" class="submit-btn">ورود</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

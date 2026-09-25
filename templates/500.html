@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطای سرور | k2mod</title>
+    <link rel="stylesheet" href="{% static 'vendor/remixicon/remixicon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+    <main class="main-content">
+        <div class="container">
+            <section class="error-page">
+                <div class="error-illustration" aria-hidden="true">
+                    <i class="ri-tools-line error-glyph"></i>
+                    <span class="error-code">۵۰۰</span>
+                </div>
+                <h1 class="error-title">مشکلی در سرور پیش آمد</h1>
+                <p class="error-text">
+                    متأسفیم! در پردازش درخواست شما خطایی رخ داد. تیم فنی k2mod
+                    در جریان قرار گرفت. لطفاً چند لحظه دیگر دوباره تلاش کنید.
+                </p>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary">
+                        <i class="ri-home-4-line"></i> بازگشت به صفحه اصلی
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

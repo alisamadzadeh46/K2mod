@@ -1,0 +1,39 @@
+{% extends "accounts/account_base.html" %}
+{% load persian %}
+{% block title %}نظرات من | k2mod{% endblock %}
+
+{% block account_content %}
+    <div class="account-card">
+        <h2 class="account-card-title">نظرات من</h2>
+
+        {% for comment in comments %}
+            <div class="my-comment">
+                <a href="{{ comment.product.get_absolute_url }}" class="my-comment-product">
+                    <i class="ri-price-tag-3-line"></i> {{ comment.product.name }}
+                </a>
+                <span class="my-comment-date">{{ comment.created_at|jalali }}</span>
+                {% if not comment.is_approved %}<span class="my-comment-pending">در انتظار تأیید</span>{% endif %}
+                <p>{{ comment.body }}</p>
+                {% for reply in comment.replies.all %}
+                    <div class="my-comment-reply">
+                        <span class="my-comment-reply-badge">پاسخ فروشگاه</span>
+                        <p>{{ reply.body }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% empty %}
+            <div class="account-empty">
+                <i class="ri-chat-3-line"></i>
+                <p>هنوز نظری ثبت نکرده‌اید.</p>
+            </div>
+        {% endfor %}
+
+        {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+                <span class="current">{{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

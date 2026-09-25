@@ -1,0 +1,36 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load static %}
+{% block title %}هزینه ارسال | پنل مدیریت{% endblock %}
+{% block extra_js %}<script src="{% static 'js/dashboard-form.js' %}"></script>{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>هزینه ارسال</h1><p>هزینه‌ی ارسال سفارش‌ها را از همین‌جا تنظیم کنید</p></div>
+    </div>
+
+    <div class="db-card" style="max-width:560px;margin-inline:auto;">
+        <div class="db-card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors }}</div>{% endif %}
+                <div class="db-form-grid">
+                    <div class="db-form-group full-width{% if form.flat_fee.errors %} has-error{% endif %}">
+                        <label for="{{ form.flat_fee.id_for_label }}">هزینه ارسال (تومان)</label>
+                        {{ form.flat_fee }}
+                        <span class="helptext">این مبلغ به همه‌ی سفارش‌ها اضافه می‌شود، مگر اینکه مشمول ارسال رایگان باشند.</span>
+                        {{ form.flat_fee.errors }}
+                    </div>
+                    <div class="db-form-group full-width{% if form.free_threshold.errors %} has-error{% endif %}">
+                        <label for="{{ form.free_threshold.id_for_label }}">ارسال رایگان از این مبلغ به بالا (تومان)</label>
+                        {{ form.free_threshold }}
+                        <span class="helptext">وقتی مبلغ کالاهای سبد خرید مساوی یا بیشتر از این عدد باشد، ارسال رایگان می‌شود. برای غیرفعال کردن ارسال رایگان، خالی بگذارید.</span>
+                        {{ form.free_threshold.errors }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;">
+                    <i class="ri-save-line"></i> ذخیره تنظیمات
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

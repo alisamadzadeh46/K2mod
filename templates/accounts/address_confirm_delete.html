@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}حذف آدرس | k2mod{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="confirm-delete-wrap">
+        <div class="confirm-delete-card">
+            <div class="confirm-delete-icon">
+                <i class="ri-delete-bin-6-line"></i>
+            </div>
+            <h2 class="confirm-delete-title">حذف این آدرس؟</h2>
+            <p class="confirm-delete-text">
+                آیا از حذف این آدرس مطمئن هستید؟ این عملیات قابل بازگشت نیست.
+            </p>
+
+            <div class="confirm-delete-address">
+                <div class="confirm-delete-address-title">{{ object.title }}</div>
+                <p>{{ object.receiver_full_name }} — {{ object.receiver_phone_number }}</p>
+                <p class="muted">{{ object.province }}، {{ object.city }} — {{ object.full_address }}</p>
+            </div>
+
+            <form method="post" class="confirm-delete-actions">
+                {% csrf_token %}
+                <a href="{% url 'accounts:addresses' %}" class="btn btn-outline">انصراف</a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="ri-delete-bin-6-line"></i>
+                    حذف آدرس
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

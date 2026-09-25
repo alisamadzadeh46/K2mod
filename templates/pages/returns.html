@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}رویه بازگرداندن کالا | k2mod{% endblock %}
+{% block meta_description %}شرایط، مراحل و زمان بازگرداندن کالا و بازپرداخت وجه در فروشگاه اینترنتی k2mod.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="{% url 'catalog:home' %}">خانه</a> / <span>رویه بازگرداندن کالا</span>
+    </div>
+
+    <section class="page-hero">
+        <span class="page-hero-icon"><i class="ri-refund-2-line"></i></span>
+        <h1>رویه بازگرداندن کالا</h1>
+        <p>رضایت شما برای ما در اولویت است. اگر خریدتان مطابق انتظار نبود، بازگرداندن آن ساده و شفاف است.</p>
+    </section>
+
+    <div class="page-body">
+        <div class="policy-block">
+            <h2><i class="ri-calendar-check-line"></i> مهلت بازگشت</h2>
+            <p>شما تا <strong>۷ روز</strong> پس از تحویل کالا فرصت دارید در صورت رعایت شرایط زیر، درخواست بازگشت خود را ثبت کنید. این مهلت مطابق قانون حمایت از حقوق مصرف‌کننده در نظر گرفته شده است.</p>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-checkbox-circle-line"></i> شرایط پذیرش مرجوعی</h2>
+            <ul class="policy-list">
+                <li><i class="ri-check-line"></i> کالا استفاده نشده و در بسته‌بندی اصلی و سالم خود باشد.</li>
+                <li><i class="ri-check-line"></i> برچسب‌ها، ضمانت‌نامه و متعلقات همراه کالا کامل باشند.</li>
+                <li><i class="ri-check-line"></i> فاکتور یا کد سفارش هنگام درخواست ارائه شود.</li>
+                <li><i class="ri-check-line"></i> کالا آسیب فیزیکی ناشی از استفاده‌ی نادرست نداشته باشد.</li>
+            </ul>
+            <div class="callout warn">
+                <i class="ri-error-warning-line"></i>
+                <span>به دلایل بهداشتی، برخی محصولات آرایشی و بهداشتی که مهروموم (پلمب) آن‌ها باز شده باشد، قابل بازگشت نیستند.</span>
+            </div>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-guide-line"></i> مراحل بازگرداندن</h2>
+            <ul class="policy-list ordered">
+                <li>از بخش «سفارش‌های من» سفارش موردنظر را باز کرده و درخواست بازگشت ثبت کنید (یا با پشتیبانی تماس بگیرید).</li>
+                <li>کارشناسان ما درخواست شما را بررسی و تأیید می‌کنند.</li>
+                <li>کالا را با بسته‌بندی مناسب برای ما ارسال کنید.</li>
+                <li>پس از دریافت و بررسی کالا، وجه به شما بازگردانده می‌شود.</li>
+            </ul>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-wallet-3-line"></i> بازپرداخت وجه</h2>
+            <p>پس از تأیید سلامت کالای مرجوعی، مبلغ خرید ظرف حداکثر <strong>۷۲ ساعت کاری</strong> به حساب شما بازگردانده می‌شود. در صورتی که کالا معیوب یا اشتباه ارسال شده باشد، هزینه‌ی ارسال مرجوعی نیز بر عهده‌ی فروشگاه خواهد بود.</p>
+            <div class="callout">
+                <i class="ri-information-line"></i>
+                <span>در صورت ارسال کالای معیوب یا مغایر با سفارش، تعویض یا بازپرداخت کامل به‌صورت رایگان انجام می‌شود.</span>
+            </div>
+        </div>
+
+        <div class="page-help">
+            <div>
+                <h3>سؤالی درباره‌ی مرجوعی دارید؟</h3>
+                <p>پیش از ثبت درخواست، می‌توانید با ما مشورت کنید.</p>
+            </div>
+            <a href="tel:02112345678" class="btn"><i class="ri-phone-line"></i> تماس با پشتیبانی</a>
+        </div>
+    </div>
+{% endblock %}

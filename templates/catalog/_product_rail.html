@@ -1,0 +1,20 @@
+{# rail_title, rail_products, rail_view_all_url #}
+<section data-carousel>
+    <h2 class="section-title">
+        {{ rail_title }}
+        <div class="section-title-actions">
+            {% if rail_view_all_url %}
+                <a class="view-all" href="{% url 'catalog:collection' rail_view_all_url %}">مشاهده همه <i class="ri-arrow-left-line"></i></a>
+            {% endif %}
+            <div class="carousel-arrows" style="display:flex; gap:6px;">
+                <button type="button" class="carousel-arrow" data-carousel-prev aria-label="قبلی"><i class="ri-arrow-right-s-line"></i></button>
+                <button type="button" class="carousel-arrow" data-carousel-next aria-label="بعدی"><i class="ri-arrow-left-s-line"></i></button>
+            </div>
+        </div>
+    </h2>
+    <div class="product-rail-wrap">
+        <div class="product-rail" data-carousel-track>
+            {% for product in rail_products %}{% include "catalog/_product_card.html" %}{% endfor %}
+        </div>
+    </div>
+</section>

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static persian %}
+{% block title %}تسویه حساب | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/cart.css' %}"><link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="checkout-page">
+        <h1 class="cart-page-title"><i class="ri-bank-card-line"></i> تسویه حساب</h1>
+
+        {% if cart.items.all %}
+            <div class="checkout-layout">
+                <div class="account-card" style="margin-bottom:0;">
+                    <div class="account-card-head">
+                        <h2 class="account-card-title">آدرس ارسال</h2>
+                        <a href="{% url 'accounts:addresses' %}" class="btn btn-outline" style="font-size:12px;padding:8px 14px;">
+                            <i class="ri-map-pin-line"></i> تغییر آدرس پیش‌فرض
+                        </a>
+                    </div>
+
+                    {% if address %}
+                        <div class="address-item is-default" style="margin-bottom:0;">
+                            <div class="address-item-body">
+                                <div class="address-item-title">{{ address.title }} <span class="address-default-badge">پیش‌فرض</span></div>
+                                <p>{{ address.receiver_full_name }} · {{ address.receiver_phone_number }}</p>
+                                <p class="muted">{{ address.province }}، {{ address.city }} — {{ address.full_address }}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p style="color: var(--text-muted); margin-bottom: 14px;">هنوز آدرسی ثبت نکرده‌اید.</p>
+                        <a href="{% url 'accounts:address_add' %}" class="btn btn-primary"><i class="ri-add-line"></i> افزودن آدرس</a>
+                    {% endif %}
+                </div>
+
+                <aside class="summary-card">
+                    <h2>خلاصه سفارش</h2>
+                    <div class="checkout-summary-items">
+                        {% for item in cart.items.all %}
+                            <div class="checkout-sum-item">
+                                <a href="{{ item.product.get_absolute_url }}" class="checkout-sum-thumb">
+                                    {% if item.product.primary_image %}<img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}">{% else %}<i class="ri-image-line"></i>{% endif %}
+                                </a>
+                                <div class="checkout-sum-info">
+                                    <a href="{{ item.product.get_absolute_url }}" class="checkout-sum-name">{{ item.product.name }}</a>
+                                    <div class="cart-item-variants">
+                                        {% if item.color %}<span class="cart-item-badge"><span class="cart-swatch" style="background: {{ item.color.hex_code }}"></span>{{ item.color.name }}</span>{% endif %}
+                                        {% if item.size %}<span class="cart-item-badge">سایز {{ item.size.name }}</span>{% endif %}
+                                        <span class="cart-item-badge">تعداد: {{ item.quantity|persian_digits }}</span>
+                                    </div>
+                                </div>
+                                <span class="checkout-sum-price">{{ item.subtotal|toman }} تومان</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row"><span>مبلغ کالاها</span><span>{{ cart.total_price|toman }} تومان</span></div>
+
+                    {% if coupon %}
+                        <div class="coupon-applied">
+                            <span><i class="ri-coupon-3-line"></i> کد «{{ coupon.code }}» ({{ coupon.percent|persian_digits }}٪)</span>
+                            <form method="post">{% csrf_token %}<button type="submit" name="remove_coupon" class="coupon-remove-btn">حذف</button></form>
+                        </div>
+                        <div class="row discount"><span>تخفیف</span><span>−{{ discount|toman }} تومان</span></div>
+                    {% else %}
+                        <form method="post" class="coupon-form">
+                            {% csrf_token %}
+                            <input type="text" name="coupon_code" placeholder="کد تخفیف دارید؟" class="coupon-input" autocomplete="off">
+                            <button type="submit" name="apply_coupon" class="coupon-apply-btn">اعمال</button>
+                        </form>
+                    {% endif %}
+
+                    <div class="row">
+                        <span>هزینه ارسال</span>
+                        <span>{% if shipping_cost %}{{ shipping_cost|toman }} تومان{% else %}<span class="free-shipping-tag">رایگان</span>{% endif %}</span>
+                    </div>
+
+                    <div class="row total"><span>مبلغ قابل پرداخت</span><span>{{ payable|toman }} تومان</span></div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary cart-checkout-btn" {% if not address %}disabled{% endif %}>
+                            ثبت سفارش و پرداخت
+                        </button>
+                    </form>
+                </aside>
+            </div>
+        {% else %}
+            <div class="cart-empty-page">
+                <i class="ri-shopping-cart-2-line"></i>
+                <p>سبد خرید شما خالی است.</p>
+                <a href="{% url 'catalog:home' %}" class="btn btn-primary">مشاهده محصولات</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

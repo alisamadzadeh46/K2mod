@@ -1,0 +1,16 @@
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/Vazirmatn-VariableFont_wght.ttf");
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+html, body, input, textarea, select, button,
+.module, .button, a, th, td, h1, h2, h3, p, li, label, .form-row, #header {
+    font-family: "Vazirmatn", "Segoe UI", Tahoma, sans-serif !important;
+}
+
+/* A little breathing room on phones */
+@media (max-width: 767px) {
+    #content { padding: 12px; }
+}

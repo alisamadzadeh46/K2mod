@@ -1,0 +1,90 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}داشبورد | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div>
+            <h1>پنل مدیریت فروشگاه</h1>
+            <p>به پنل مدیریت فروشگاه k2mod خوش آمدید</p>
+        </div>
+        <a href="{% url 'dashboard:product_add' %}" class="btn btn-primary"><i class="ri-add-line"></i> محصول جدید</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card pink">
+            <div class="stat-icon"><i class="ri-shopping-bag-line"></i></div>
+            <div class="stat-info"><h3>{{ products_sold|toman }}</h3><p>محصول فروخته شده</p></div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-icon"><i class="ri-money-dollar-circle-line"></i></div>
+            <div class="stat-info"><h3>{{ total_revenue|toman }}</h3><p>درآمد کل (تومان)</p></div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-icon"><i class="ri-user-line"></i></div>
+            <div class="stat-info"><h3>{{ new_users_count|toman }}</h3><p>کاربر جدید (۳۰ روز اخیر)</p></div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-icon"><i class="ri-shopping-cart-line"></i></div>
+            <div class="stat-info"><h3>{{ new_orders_count|toman }}</h3><p>سفارش جدید (۳۰ روز اخیر)</p></div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="db-card">
+            <div class="db-card-header">
+                <h2>محصولات اخیر</h2>
+                <a href="{% url 'dashboard:product_list' %}" class="btn btn-outline">مشاهده همه</a>
+            </div>
+            <div class="db-card-body" style="padding: 0;">
+                <table class="data-table">
+                    <thead><tr><th>محصول</th><th>دسته‌بندی</th><th>قیمت</th><th>موجودی</th></tr></thead>
+                    <tbody>
+                        {% for product in recent_products %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.category.name }}</td>
+                                <td>{{ product.price|toman }} ت</td>
+                                <td><span class="status-badge {% if product.stock > 10 %}active{% elif product.stock > 0 %}low{% else %}pending{% endif %}">{{ product.stock }}</span></td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4">محصولی ثبت نشده است.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="db-card">
+            <div class="db-card-header"><h2>سفارشات اخیر</h2></div>
+            <div class="db-card-body">
+                {% for order in recent_orders %}
+                    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                        <span>{{ order.user }}</span>
+                        <span>{{ order.total_price|toman }} ت</span>
+                    </div>
+                {% empty %}
+                    <p style="color: var(--db-gray);">سفارشی ثبت نشده است.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="db-card">
+        <div class="db-card-header"><h2>آمار فروش ماهانه</h2></div>
+        <div class="db-card-body">
+            {% if monthly_sales %}
+                <table class="data-table">
+                    <thead><tr><th>ماه</th><th>مجموع فروش</th></tr></thead>
+                    <tbody>
+                        {% for row in monthly_sales %}
+                            <tr><td>{{ row.month|date:"Y/m" }}</td><td>{{ row.total|toman }} ت</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--db-gray);">هنوز سفارش پرداخت‌شده‌ای ثبت نشده است.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

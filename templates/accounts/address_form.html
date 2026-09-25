@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}آدرس | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="account-card" style="max-width: 620px; margin: 30px auto;">
+        <h2>{% if object %}ویرایش آدرس{% else %}افزودن آدرس جدید{% endif %}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.field.widget.input_type == "checkbox" %}
+                    <label class="form-checkbox">
+                        {{ field }}
+                        <span>{{ field.label }}</span>
+                    </label>
+                {% else %}
+                    <div class="input-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit" class="submit-btn">ذخیره آدرس</button>
+        </form>
+    </div>
+{% endblock %}

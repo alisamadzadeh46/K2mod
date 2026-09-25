@@ -1,0 +1,22 @@
+{% extends "accounts/account_base.html" %}
+{% load static %}
+{% block title %}محصولات مورد علاقه | k2mod{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/products.css' %}">{% endblock %}
+
+{% block account_content %}
+    <div class="account-card favorites-page">
+        <h2 class="account-card-title">محصولات مورد علاقه</h2>
+
+        {% if products %}
+            <div class="favorites-grid">
+                {% for product in products %}{% include "catalog/_product_card.html" %}{% endfor %}
+            </div>
+        {% else %}
+            <div class="account-empty">
+                <i class="ri-heart-line"></i>
+                <p>هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
+                <a href="{% url 'catalog:home' %}" class="btn btn-primary">مشاهده محصولات</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

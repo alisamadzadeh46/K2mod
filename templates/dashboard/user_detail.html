@@ -1,0 +1,91 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}{{ account.get_full_name }} | مدیریت کاربران{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>{{ account.get_full_name }}</h1><p>{{ account.phone_number }} · عضویت از {{ account.date_joined|jalali }}</p></div>
+        <a href="{% url 'dashboard:user_list' %}" class="btn btn-outline"><i class="ri-arrow-right-line"></i> بازگشت</a>
+    </div>
+
+    <div class="content-grid">
+        <div>
+            <div class="db-card">
+                <div class="db-card-header"><h2>اطلاعات کاربر</h2></div>
+                <div class="db-card-body">
+                    <table class="data-table kv-table" style="border:0;">
+                        <tr><th style="width:40%">نام کامل</th><td>{{ account.get_full_name }}</td></tr>
+                        <tr><th>شماره موبایل</th><td>{{ account.phone_number }}</td></tr>
+                        <tr><th>ایمیل</th><td>{{ account.email|default:"—" }}</td></tr>
+                        <tr><th>تعداد سفارش‌ها</th><td>{{ account.orders.count|persian_digits }}</td></tr>
+                        <tr><th>تعداد دیدگاه‌ها</th><td>{{ comment_count|persian_digits }}</td></tr>
+                        <tr><th>علاقه‌مندی‌ها</th><td>{{ favorite_count|persian_digits }}</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="db-card">
+                <div class="db-card-header"><h2>آخرین سفارش‌ها</h2></div>
+                <div class="db-card-body" style="padding:0;">
+                    <table class="data-table">
+                        <thead><tr><th>شماره</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th></tr></thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td><a href="{% url 'dashboard:order_detail' order.pk %}" style="color:var(--db-primary);">{{ order.id|persian_digits }}</a></td>
+                                    <td>{{ order.total_price|toman }} ت</td>
+                                    <td><span class="status-badge {{ order.status }}">{{ order.get_status_display }}</span></td>
+                                    <td>{{ order.created_at|jalali }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="4">سفارشی ثبت نکرده است.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="db-card">
+                <div class="db-card-header"><h2>مدیریت دسترسی</h2></div>
+                <div class="db-card-body">
+                    <p style="margin-bottom:14px;">وضعیت:
+                        <span class="status-badge {% if account.is_active %}active{% else %}low{% endif %}">{% if account.is_active %}فعال{% else %}غیرفعال{% endif %}</span>
+                        {% if account.is_superuser %}<span class="status-badge shipped">مدیر کل</span>{% elif account.is_staff %}<span class="status-badge shipped">مدیر</span>{% endif %}
+                    </p>
+
+                    <form method="post" action="{% url 'dashboard:user_toggle_active' account.pk %}" style="margin-bottom:10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline" style="width:100%;">
+                            {% if account.is_active %}<i class="ri-forbid-line"></i> غیرفعال کردن حساب{% else %}<i class="ri-check-line"></i> فعال کردن حساب{% endif %}
+                        </button>
+                    </form>
+
+                    {% if not account.is_superuser %}
+                        <form method="post" action="{% url 'dashboard:user_toggle_staff' account.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn {% if account.is_staff %}btn-outline{% else %}btn-primary{% endif %}" style="width:100%;">
+                                {% if account.is_staff %}<i class="ri-user-unfollow-line"></i> خارج کردن از مدیریت{% else %}<i class="ri-shield-user-line"></i> ارتقا به مدیر{% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="db-card">
+                <div class="db-card-header"><h2>آدرس‌ها</h2></div>
+                <div class="db-card-body">
+                    {% for address in addresses %}
+                        <div style="border:1px solid var(--db-border);border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;">
+                            <strong>{{ address.title }}</strong>
+                            <p style="color:var(--db-muted);margin-top:4px;">{{ address.province }}، {{ address.city }} — {{ address.full_address }}</p>
+                        </div>
+                    {% empty %}
+                        <p style="color:var(--db-muted);">آدرسی ثبت نکرده است.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

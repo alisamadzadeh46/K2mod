@@ -1,0 +1,49 @@
+{% extends "accounts/account_base.html" %}
+{% load static persian %}
+{% block title %}جزئیات سفارش {{ order.id|persian_digits }} | k2mod{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/cart.css' %}">{% endblock %}
+
+{% block account_content %}
+    <div class="account-card">
+        <div class="account-card-head">
+            <h2 class="account-card-title">شماره سفارش: {{ order.id|persian_digits }}</h2>
+            <span class="status-pill {{ order.status }}">{{ order.get_status_display }}</span>
+        </div>
+
+        <div class="order-detail-meta">
+            <div><span>تاریخ ثبت</span><strong>{{ order.created_at|jalali_datetime }}</strong></div>
+            <div><span>مبلغ کل</span><strong>{{ order.total_price|toman }} تومان</strong></div>
+            <div><span>گیرنده</span><strong>{{ order.address.receiver_full_name }}</strong></div>
+        </div>
+
+        <h3 class="order-detail-subtitle"><i class="ri-shopping-bag-3-line"></i> اقلام سفارش</h3>
+        {% include "orders/_order_items.html" %}
+
+        <div class="order-cost-breakdown">
+            <div class="row"><span>مبلغ کالاها</span><span>{{ order.items_total|toman }} تومان</span></div>
+            {% if order.discount %}<div class="row discount"><span>تخفیف {% if order.coupon_code %}(کد {{ order.coupon_code }}){% endif %}</span><span>−{{ order.discount|toman }} تومان</span></div>{% endif %}
+            <div class="row"><span>هزینه ارسال</span><span>{% if order.shipping_cost %}{{ order.shipping_cost|toman }} تومان{% else %}<span class="free-shipping-tag">رایگان</span>{% endif %}</span></div>
+            <div class="row total"><span>مبلغ کل</span><span>{{ order.total_price|toman }} تومان</span></div>
+        </div>
+
+        {% if order.tracking_code %}
+            <h3 class="order-detail-subtitle"><i class="ri-truck-line"></i> رهگیری مرسوله</h3>
+            <div class="order-tracking">
+                <div class="order-tracking-row">
+                    <span>شرکت حمل</span>
+                    <strong>{{ order.get_shipping_carrier_display|default:"—" }}</strong>
+                </div>
+                <div class="order-tracking-row">
+                    <span>کد رهگیری</span>
+                    <strong class="order-tracking-code" dir="ltr">{{ order.tracking_code }}</strong>
+                </div>
+            </div>
+        {% endif %}
+
+        <h3 class="order-detail-subtitle"><i class="ri-map-pin-line"></i> آدرس ارسال</h3>
+        <p class="muted" style="font-size:13px;line-height:1.9;">
+            {{ order.address.province }}، {{ order.address.city }} — {{ order.address.full_address }}<br>
+            {{ order.address.receiver_full_name }} · {{ order.address.receiver_phone_number }}
+        </p>
+    </div>
+{% endblock %}

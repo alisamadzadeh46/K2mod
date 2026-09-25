@@ -1,0 +1,42 @@
+{% extends "accounts/account_base.html" %}
+{% block title %}آدرس‌های من | k2mod{% endblock %}
+
+{% block account_content %}
+    <div class="account-card">
+        <div class="account-card-head">
+            <h2 class="account-card-title">آدرس‌های من</h2>
+            <a href="{% url 'accounts:address_add' %}" class="btn btn-primary"><i class="ri-add-line"></i> افزودن آدرس جدید</a>
+        </div>
+
+        {% for address in addresses %}
+            <div class="address-item {% if address.is_default %}is-default{% endif %}">
+                <div class="address-item-body">
+                    <div class="address-item-title">
+                        {{ address.title }}
+                        {% if address.is_default %}<span class="address-default-badge">پیش‌فرض</span>{% endif %}
+                    </div>
+                    <p>{{ address.receiver_full_name }} · {{ address.receiver_phone_number }}</p>
+                    <p class="muted">{{ address.province }}، {{ address.city }} — {{ address.full_address }}</p>
+                </div>
+                <div class="address-item-actions">
+                    {% if not address.is_default %}
+                        <form method="post" action="{% url 'accounts:address_set_default' address.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" title="انتخاب به عنوان پیش‌فرض" class="address-set-default"><i class="ri-star-line"></i></button>
+                        </form>
+                    {% else %}
+                        <span title="آدرس پیش‌فرض" class="address-set-default is-default"><i class="ri-star-fill"></i></span>
+                    {% endif %}
+                    <a href="{% url 'accounts:address_edit' address.pk %}" title="ویرایش"><i class="ri-edit-line"></i></a>
+                    <a href="{% url 'accounts:address_delete' address.pk %}" title="حذف"><i class="ri-delete-bin-line"></i></a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="account-empty">
+                <i class="ri-map-pin-line"></i>
+                <p>هنوز آدرسی ثبت نکرده‌اید.</p>
+                <a href="{% url 'accounts:address_add' %}" class="btn btn-primary">افزودن آدرس</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}کاربران | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header"><div><h1>مدیریت کاربران</h1><p>{{ paginator.count }} کاربر ثبت‌نام کرده</p></div></div>
+
+    <div class="db-card">
+        <div class="db-card-body" style="padding: 0;">
+            <table class="data-table">
+                <thead><tr><th>نام</th><th>شماره موبایل</th><th>عضویت</th><th>نقش</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                <tbody>
+                    {% for u in users %}
+                        <tr>
+                            <td><a href="{% url 'dashboard:user_detail' u.pk %}" style="color:var(--db-primary);font-weight:600;">{{ u.full_name|default:"—" }}</a></td>
+                            <td>{{ u.phone_number }}</td>
+                            <td>{{ u.date_joined|jalali }}</td>
+                            <td>{% if u.is_superuser %}<span class="status-badge shipped">مدیر کل</span>{% elif u.is_staff %}<span class="status-badge shipped">مدیر</span>{% else %}<span class="status-badge">کاربر</span>{% endif %}</td>
+                            <td><span class="status-badge {% if u.is_active %}active{% else %}low{% endif %}">{% if u.is_active %}فعال{% else %}غیرفعال{% endif %}</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'dashboard:user_detail' u.pk %}" class="action-btn edit" title="جزئیات"><i class="ri-eye-line"></i></a>
+                                    <form method="post" action="{% url 'dashboard:user_toggle_active' u.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-btn {% if u.is_active %}delete{% else %}edit{% endif %}" title="{% if u.is_active %}غیرفعال کردن{% else %}فعال کردن{% endif %}">
+                                            <i class="{% if u.is_active %}ri-forbid-line{% else %}ri-check-line{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6">کاربری ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+            <span class="current">{{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

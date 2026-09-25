@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}پنل مدیریت | k2mod{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'vendor/remixicon/remixicon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dashboard-body">
+    <div class="admin-container">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <aside class="sidebar" id="dashboardSidebar">
+            <a href="{% url 'catalog:home' %}" class="db-logo">
+                <span class="db-logo-icon"><i class="ri-gift-2-line"></i></span>
+                <span class="db-logo-text">k2<span>mod</span></span>
+            </a>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:home' %}" class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}">
+                        <i class="ri-dashboard-line"></i><span>داشبورد</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:product_list' %}" class="nav-link {% if active_tab == 'products' %}active{% endif %}">
+                        <i class="ri-shopping-bag-line"></i><span>محصولات</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:product_add' %}" class="nav-link {% if active_tab == 'add-product' %}active{% endif %}">
+                        <i class="ri-add-circle-line"></i><span>افزودن محصول</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:category_list' %}" class="nav-link {% if active_tab == 'categories' %}active{% endif %}">
+                        <i class="ri-price-tag-3-line"></i><span>دسته‌بندی‌ها</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:order_list' %}" class="nav-link {% if active_tab == 'orders' %}active{% endif %}">
+                        <i class="ri-shopping-cart-line"></i><span>سفارشات</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:coupon_list' %}" class="nav-link {% if active_tab == 'coupons' %}active{% endif %}">
+                        <i class="ri-coupon-3-line"></i><span>کدهای تخفیف</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:shipping_settings' %}" class="nav-link {% if active_tab == 'shipping' %}active{% endif %}">
+                        <i class="ri-truck-line"></i><span>هزینه ارسال</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:comment_list' %}" class="nav-link {% if active_tab == 'comments' %}active{% endif %}">
+                        <i class="ri-chat-3-line"></i><span>دیدگاه‌ها</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:user_list' %}" class="nav-link {% if active_tab == 'users' %}active{% endif %}">
+                        <i class="ri-user-line"></i><span>کاربران</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:reports' %}" class="nav-link {% if active_tab == 'reports' %}active{% endif %}">
+                        <i class="ri-bar-chart-line"></i><span>گزارشات</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'admin:index' %}" class="nav-link">
+                        <i class="ri-settings-3-line"></i><span>تنظیمات پیشرفته</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="{% url 'catalog:home' %}" class="nav-link">
+                    <i class="ri-store-2-line"></i><span>مشاهده سایت</span>
+                </a>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link nav-logout">
+                        <i class="ri-logout-box-r-line"></i><span>خروج از پنل</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-topbar">
+                <button class="db-menu-toggle" id="dbMenuToggle" aria-label="منو"><i class="ri-menu-line"></i></button>
+                <div class="db-topbar-user">
+                    <i class="ri-user-3-line"></i>
+                    <span>{{ request.user.get_short_name }}</span>
+                </div>
+            </div>
+
+            {% if messages %}
+                <ul class="messages" style="margin: 0 0 18px; padding: 0;">
+                    {% for message in messages %}<li class="message {{ message.tags }}">{{ message }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

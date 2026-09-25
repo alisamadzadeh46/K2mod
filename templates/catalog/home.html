@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}k2mod | فروشگاه اینترنتی کادو، آرایشی و پوشاک{% endblock %}
+{% block seo_extra %}{% for code in enamad_codes %}<meta name="enamad" content="{{ code }}" />{% endfor %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home.css' %}"><link rel="stylesheet" href="{% static 'css/products.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="hero" data-carousel>
+        {% if banners %}
+            <div class="hero-slides" data-carousel-track>
+                {% for banner in banners %}
+                    <div class="hero-slide">
+                        {% if banner.link_url %}<a href="{{ banner.link_url }}">{% endif %}
+                        <img src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                        {% if banner.link_url %}</a>{% endif %}
+                        {% if banner.title %}<div class="hero-slide-caption">{{ banner.title }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            {% if banners|length > 1 %}
+                <button type="button" class="carousel-arrow" data-carousel-prev aria-label="اسلاید قبلی"><i class="ri-arrow-right-s-line"></i></button>
+                <button type="button" class="carousel-arrow" data-carousel-next aria-label="اسلاید بعدی"><i class="ri-arrow-left-s-line"></i></button>
+                <div class="carousel-dots" data-carousel-dots></div>
+            {% endif %}
+        {% else %}
+            <div class="hero-empty">به فروشگاه k2mod خوش آمدید</div>
+        {% endif %}
+    </div>
+
+    {% if promo_banners %}
+        <div class="promo-grid">
+            {% for banner in promo_banners %}
+                <a href="{{ banner.link_url|default:'#' }}" class="promo-tile">
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if bestsellers %}
+        {% include "catalog/_product_rail.html" with rail_title="پرفروش‌ترین‌ها" rail_products=bestsellers rail_view_all_url="bestsellers" %}
+    {% endif %}
+
+    {% if new_arrivals %}
+        {% include "catalog/_product_rail.html" with rail_title="جدیدترین محصولات" rail_products=new_arrivals rail_view_all_url="new" %}
+    {% endif %}
+
+    {% if deals %}
+        {% include "catalog/_product_rail.html" with rail_title="پیشنهادهای شگفت‌انگیز" rail_products=deals rail_view_all_url="deals" %}
+    {% endif %}
+
+    {% if featured %}
+        {% include "catalog/_product_rail.html" with rail_title="منتخب فروشگاه" rail_products=featured rail_view_all_url="featured" %}
+    {% endif %}
+
+    {% if not bestsellers and not new_arrivals and not deals and not featured %}
+        <div class="empty-state">
+            <i class="ri-store-2-line" style="font-size: 48px;"></i>
+            <p>هنوز محصولی اضافه نشده است. از پنل مدیریت محصول اضافه کنید.</p>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static persian %}
+{% block title %}{{ category.name }} | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/products.css' %}">{% endblock %}
+{% block extra_js %}<script src="{% static 'js/filters.js' %}"></script>{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="{% url 'catalog:home' %}">خانه</a> /
+        {% if category.parent %}<a href="{{ category.parent.get_absolute_url }}">{{ category.parent.name }}</a> /{% endif %}
+        <span>{{ category.name }}</span>
+    </div>
+
+    <div class="listing-layout">
+        <aside class="filters-panel">
+            <h3><i class="ri-equalizer-line"></i> فیلترها</h3>
+            <form method="get" id="filtersForm">
+                <div class="filter-group">
+                    <span class="filter-group-title">محدوده قیمت</span>
+                    <div class="price-range" data-min="{{ price_min_bound }}" data-max="{{ price_max_bound }}">
+                        <div class="price-range-labels">
+                            <span>از <b id="priceMinLabel">۰</b> تومان</span>
+                            <span>تا <b id="priceMaxLabel">۰</b> تومان</span>
+                        </div>
+                        <div class="range-slider">
+                            <div class="range-track"></div>
+                            <div class="range-fill" id="rangeFill"></div>
+                            <input type="range" id="rangeMin" min="{{ price_min_bound }}" max="{{ price_max_bound }}" step="10000">
+                            <input type="range" id="rangeMax" min="{{ price_min_bound }}" max="{{ price_max_bound }}" step="10000">
+                        </div>
+                        <input type="hidden" name="min_price" id="minPriceInput" value="{{ request.GET.min_price }}">
+                        <input type="hidden" name="max_price" id="maxPriceInput" value="{{ request.GET.max_price }}">
+                    </div>
+                </div>
+
+                {% if available_brands %}
+                    <div class="filter-group">
+                        <span class="filter-group-title">برند</span>
+                        <div class="custom-select" data-autosubmit="1">
+                            <button type="button" class="cs-trigger">
+                                <span class="cs-current">{% for brand in available_brands %}{% if request.GET.brand == brand.id|stringformat:"s" %}{{ brand.name }}{% endif %}{% endfor %}{% if not request.GET.brand %}همه برندها{% endif %}</span>
+                                <i class="ri-arrow-down-s-line"></i>
+                            </button>
+                            <div class="cs-options">
+                                <div class="cs-option {% if not request.GET.brand %}selected{% endif %}" data-value="">همه برندها</div>
+                                {% for brand in available_brands %}
+                                    <div class="cs-option {% if request.GET.brand == brand.id|stringformat:'s' %}selected{% endif %}" data-value="{{ brand.id }}">{{ brand.name }}</div>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="brand" value="{{ request.GET.brand }}">
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if available_colors %}
+                    <div class="filter-group">
+                        <span class="filter-group-title">رنگ</span>
+                        <div class="custom-select" data-autosubmit="1">
+                            <button type="button" class="cs-trigger">
+                                <span class="cs-current">{% for color in available_colors %}{% if request.GET.color == color.id|stringformat:"s" %}{{ color.name }}{% endif %}{% endfor %}{% if not request.GET.color %}همه رنگ‌ها{% endif %}</span>
+                                <i class="ri-arrow-down-s-line"></i>
+                            </button>
+                            <div class="cs-options">
+                                <div class="cs-option {% if not request.GET.color %}selected{% endif %}" data-value="">همه رنگ‌ها</div>
+                                {% for color in available_colors %}
+                                    <div class="cs-option {% if request.GET.color == color.id|stringformat:'s' %}selected{% endif %}" data-value="{{ color.id }}">
+                                        <span class="cs-swatch" style="background: {{ color.hex_code }}"></span>{{ color.name }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="color" value="{{ request.GET.color }}">
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if available_sizes %}
+                    <div class="filter-group">
+                        <span class="filter-group-title">سایز</span>
+                        <div class="custom-select" data-autosubmit="1">
+                            <button type="button" class="cs-trigger">
+                                <span class="cs-current">{% for size in available_sizes %}{% if request.GET.size == size.id|stringformat:"s" %}سایز {{ size.name }}{% endif %}{% endfor %}{% if not request.GET.size %}همه سایزها{% endif %}</span>
+                                <i class="ri-arrow-down-s-line"></i>
+                            </button>
+                            <div class="cs-options">
+                                <div class="cs-option {% if not request.GET.size %}selected{% endif %}" data-value="">همه سایزها</div>
+                                {% for size in available_sizes %}
+                                    <div class="cs-option {% if request.GET.size == size.id|stringformat:'s' %}selected{% endif %}" data-value="{{ size.id }}">سایز {{ size.name }}</div>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="size" value="{{ request.GET.size }}">
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="filter-group">
+                    <span class="filter-group-title">مرتب‌سازی</span>
+                    <div class="custom-select" data-autosubmit="1">
+                        <button type="button" class="cs-trigger">
+                            <span class="cs-current">
+                                {% if current_sort == "price_asc" %}ارزان‌ترین{% elif current_sort == "price_desc" %}گران‌ترین{% elif current_sort == "name" %}نام محصول{% else %}جدیدترین{% endif %}
+                            </span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="cs-options">
+                            <div class="cs-option {% if current_sort == 'newest' %}selected{% endif %}" data-value="newest">جدیدترین</div>
+                            <div class="cs-option {% if current_sort == 'price_asc' %}selected{% endif %}" data-value="price_asc">ارزان‌ترین</div>
+                            <div class="cs-option {% if current_sort == 'price_desc' %}selected{% endif %}" data-value="price_desc">گران‌ترین</div>
+                            <div class="cs-option {% if current_sort == 'name' %}selected{% endif %}" data-value="name">نام محصول</div>
+                        </div>
+                        <input type="hidden" name="sort" value="{{ current_sort }}">
+                    </div>
+                </div>
+
+                <label class="filter-checkbox">
+                    <input type="checkbox" name="in_stock" value="1" data-autosubmit="1" {% if request.GET.in_stock == "1" %}checked{% endif %}>
+                    <span>فقط کالاهای موجود</span>
+                </label>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">اعمال فیلتر</button>
+            </form>
+        </aside>
+
+        <div>
+            <div class="listing-toolbar">
+                <h1 style="font-size: 20px;">{{ category.name }}</h1>
+                <span class="count">{{ paginator.count|persian_digits }} محصول</span>
+            </div>
+
+            {% if products %}
+                <div class="product-grid">
+                    {% for product in products %}{% include "catalog/_product_card.html" %}{% endfor %}
+                </div>
+
+                {% if is_paginated %}
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">قبلی</a>
+                        {% endif %}
+                        <span class="current">{{ page_obj.number|persian_digits }} از {{ page_obj.paginator.num_pages|persian_digits }}</span>
+                        {% if page_obj.has_next %}
+                            <a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">بعدی</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="ri-inbox-line" style="font-size: 48px;"></i>
+                    <p>محصولی در این دسته‌بندی یافت نشد.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

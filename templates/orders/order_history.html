@@ -1,0 +1,50 @@
+{% extends "accounts/account_base.html" %}
+{% load static persian %}
+{% block title %}سفارش‌های من | k2mod{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/cart.css' %}">{% endblock %}
+
+{% block account_content %}
+    <div class="account-card">
+        <h2 class="account-card-title">سفارش‌های من</h2>
+
+        {% if orders %}
+            {% for order in orders %}
+                <div class="order-history-card">
+                    <div class="order-history-head">
+                        <div class="order-history-id">
+                            <a href="{% url 'orders:detail' order.id %}">شماره سفارش: <strong>{{ order.id|persian_digits }}</strong></a>
+                            <span class="order-history-date">{{ order.created_at|jalali_datetime }}</span>
+                        </div>
+                        <span class="status-pill {{ order.status }}">{{ order.get_status_display }}</span>
+                    </div>
+                    <div class="order-history-items">
+                        {% for item in order.items.all %}
+                            <div class="order-history-row">
+                                <span>{{ item.product_name }} <span class="muted">× {{ item.quantity|persian_digits }}</span></span>
+                                <span>{{ item.subtotal|toman }} تومان</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="order-history-total">
+                        <span>مبلغ کل</span><span>{{ order.total_price|toman }} تومان</span>
+                    </div>
+                    <a href="{% url 'orders:detail' order.id %}" class="order-history-link">مشاهده جزئیات کامل <i class="ri-arrow-left-line"></i></a>
+                </div>
+            {% endfor %}
+
+            {% if is_paginated %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+                    <span class="current">{{ page_obj.number|persian_digits }} از {{ page_obj.paginator.num_pages|persian_digits }}</span>
+                    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="account-empty">
+                <i class="ri-file-list-3-line"></i>
+                <p>هنوز سفارشی ثبت نکرده‌اید.</p>
+                <a href="{% url 'catalog:home' %}" class="btn btn-primary">شروع خرید</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

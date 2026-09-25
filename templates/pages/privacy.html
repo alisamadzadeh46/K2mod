@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}حریم خصوصی | k2mod{% endblock %}
+{% block meta_description %}سیاست حفظ حریم خصوصی و نحوه‌ی جمع‌آوری، استفاده و محافظت از اطلاعات کاربران در فروشگاه اینترنتی k2mod.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="{% url 'catalog:home' %}">خانه</a> / <span>حریم خصوصی</span>
+    </div>
+
+    <section class="page-hero">
+        <span class="page-hero-icon"><i class="ri-lock-2-line"></i></span>
+        <h1>سیاست حریم خصوصی</h1>
+        <p>حفاظت از اطلاعات شما برای ما یک تعهد است. در این صفحه شفاف توضیح می‌دهیم چه داده‌هایی جمع‌آوری می‌کنیم و چگونه از آن‌ها محافظت می‌کنیم.</p>
+    </section>
+
+    <div class="page-body">
+        <div class="policy-block">
+            <h2><i class="ri-database-2-line"></i> چه اطلاعاتی جمع‌آوری می‌کنیم؟</h2>
+            <p>برای ارائه‌ی خدمات و پردازش سفارش‌ها، تنها اطلاعات ضروری زیر را دریافت می‌کنیم:</p>
+            <ul class="policy-list">
+                <li><i class="ri-check-line"></i> شماره موبایل و نام (برای ساخت حساب و ورود).</li>
+                <li><i class="ri-check-line"></i> نشانی و اطلاعات گیرنده (برای ارسال سفارش).</li>
+                <li><i class="ri-check-line"></i> ایمیل (برای اطلاع‌رسانی وضعیت سفارش).</li>
+                <li><i class="ri-check-line"></i> تاریخچه‌ی سفارش‌ها و علاقه‌مندی‌ها (برای بهبود تجربه‌ی خرید).</li>
+            </ul>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-focus-2-line"></i> از اطلاعات چگونه استفاده می‌کنیم؟</h2>
+            <ul class="policy-list">
+                <li><i class="ri-check-line"></i> پردازش، ارسال و پیگیری سفارش‌ها.</li>
+                <li><i class="ri-check-line"></i> پشتیبانی و پاسخگویی به درخواست‌های شما.</li>
+                <li><i class="ri-check-line"></i> اطلاع‌رسانی درباره‌ی وضعیت سفارش و پیشنهادهای ویژه (با رضایت شما).</li>
+                <li><i class="ri-check-line"></i> بهبود امنیت، عملکرد و کیفیت خدمات فروشگاه.</li>
+            </ul>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-shield-keyhole-line"></i> امنیت و محافظت از داده‌ها</h2>
+            <p>اطلاعات شما روی سرورهای امن نگهداری می‌شود و ارتباط سایت از طریق پروتکل رمزنگاری‌شده‌ی <strong>HTTPS</strong> برقرار است. رمز عبور شما به‌صورت رمزنگاری‌شده ذخیره می‌شود و برای هیچ‌کس (حتی مدیران) قابل مشاهده نیست.</p>
+            <div class="callout">
+                <i class="ri-bank-card-line"></i>
+                <span>هیچ‌گونه اطلاعات کارت بانکی روی سرورهای ما ذخیره نمی‌شود؛ پرداخت‌ها مستقیماً از طریق درگاه امن بانکی انجام می‌گیرد.</span>
+            </div>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-share-forward-line"></i> اشتراک‌گذاری اطلاعات</h2>
+            <p>ما اطلاعات شخصی شما را <strong>نمی‌فروشیم</strong> و در اختیار اشخاص ثالث قرار نمی‌دهیم. تنها در مواردی مانند تحویل سفارش (شرکت پست/پیک) یا الزام قانونی، حداقل اطلاعات لازم به اشتراک گذاشته می‌شود.</p>
+        </div>
+
+        <div class="policy-block">
+            <h2><i class="ri-user-settings-line"></i> حقوق شما</h2>
+            <ul class="policy-list">
+                <li><i class="ri-check-line"></i> مشاهده و ویرایش اطلاعات حساب کاربری در هر زمان.</li>
+                <li><i class="ri-check-line"></i> درخواست حذف حساب و اطلاعات شخصی.</li>
+                <li><i class="ri-check-line"></i> انصراف از دریافت پیام‌های تبلیغاتی.</li>
+            </ul>
+        </div>
+
+        <div class="page-help">
+            <div>
+                <h3>سؤالی درباره‌ی حریم خصوصی دارید؟</h3>
+                <p>برای هر پرسشی درباره‌ی داده‌هایتان با ما در تماس باشید.</p>
+            </div>
+            <a href="tel:02112345678" class="btn"><i class="ri-phone-line"></i> تماس با پشتیبانی</a>
+        </div>
+
+        <p class="page-updated">آخرین بروزرسانی: تیر ۱۴۰۵</p>
+    </div>
+{% endblock %}

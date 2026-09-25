@@ -1,0 +1,176 @@
+{% load static persian %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}k2mod | فروشگاه اینترنتی{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}فروشگاه اینترنتی k2mod — لوازم آرایشی، پوشاک و اکسسوری اصل با ضمانت اصالت و ارسال سریع.{% endblock %}">
+    {% block seo_extra %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'vendor/remixicon/remixicon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-container">
+            <div class="cart-header">
+                <h2><i class="ri-shopping-bag-3-line"></i> سبد خرید</h2>
+                <button class="close-btn" id="closeModal">✕</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                {% include "cart/_cart_items.html" %}
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>مجموع:</span>
+                    <span><span id="cartTotal">{{ cart.total_price|default:0|toman }}</span> تومان</span>
+                </div>
+                <div class="cart-buttons">
+                    <button class="btn btn-outline" id="backBtn">ادامه خرید</button>
+                    <a class="btn btn-primary" href="{% url 'orders:checkout' %}">تسویه حساب</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="header-main">
+            <div class="container">
+                <button class="nav-toggle" id="navToggle" aria-label="منو">
+                    <i class="ri-menu-line"></i>
+                </button>
+
+                <a href="{% url 'catalog:home' %}" class="logo">
+                    <i class="ri-gift-2-line"></i> k2mod
+                </a>
+
+                <form class="search-box" action="{% url 'catalog:search' %}" method="get">
+                    <button type="submit" aria-label="جستجو"><i class="ri-search-line"></i></button>
+                    <input type="text" name="q" placeholder="جستجو در فروشگاه k2mod" value="{{ request.GET.q }}">
+                </form>
+
+                <div class="user-actions">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:profile' %}" class="header-account-btn">
+                            <i class="ri-user-3-line"></i>
+                            <span>سلام، {{ user.get_short_name }}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="header-account-btn">
+                            <i class="ri-user-3-line"></i>
+                            <span>ورود | ثبت‌نام</span>
+                        </a>
+                    {% endif %}
+                    <span class="header-divider"></span>
+                    <button class="header-cart-btn" id="cartButton" aria-label="سبد خرید">
+                        <i class="ri-shopping-cart-2-line"></i>
+                        <span class="cart-count">{{ cart.total_items|default:0|persian_digits }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="main-nav" id="mainNav">
+            <div class="container">
+                <div class="nav-categories" id="navCategories">
+                    <button type="button" class="nav-categories-btn" id="navCategoriesBtn">
+                        <i class="ri-apps-2-line"></i>
+                        <span>دسته‌بندی کالاها</span>
+                        <i class="ri-arrow-down-s-line caret"></i>
+                    </button>
+                    <div class="nav-categories-menu">
+                        {% for category in nav_categories %}
+                            <a href="{% url 'catalog:product_list' category.slug %}" class="nav-categories-menu-item">
+                                {% if category.icon_class %}<i class="{{ category.icon_class }}"></i>{% endif %}
+                                <span>{{ category.name }}</span>
+                                <i class="ri-arrow-left-s-line"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-trust">
+                <div class="trust-item">
+                    <i class="ri-truck-line"></i>
+                    <span>ارسال سریع به سراسر کشور</span>
+                </div>
+                <div class="trust-item">
+                    <i class="ri-shield-check-line"></i>
+                    <span>ضمانت اصالت کالا</span>
+                </div>
+                <div class="trust-item">
+                    <i class="ri-refund-2-line"></i>
+                    <span>۷ روز ضمانت بازگشت</span>
+                </div>
+                <div class="trust-item">
+                    <i class="ri-customer-service-2-line"></i>
+                    <span>پشتیبانی همه‌روزه</span>
+                </div>
+            </div>
+
+            <div class="footer-main">
+                <div class="footer-brand-col">
+                    <a href="{% url 'catalog:home' %}" class="footer-logo"><i class="ri-gift-2-line"></i> k2mod</a>
+                    <p>فروشگاه اینترنتی لوازم آرایشی، پوشاک و اکسسوری با تضمین اصالت و قیمت مناسب.</p>
+                    <div class="footer-socials">
+                        <a href="#" aria-label="اینستاگرام"><i class="ri-instagram-line"></i></a>
+                        <a href="#" aria-label="تلگرام"><i class="ri-telegram-line"></i></a>
+                        <a href="#" aria-label="واتساپ"><i class="ri-whatsapp-line"></i></a>
+                    </div>
+                </div>
+                <nav class="footer-col">
+                    <h3>دسترسی سریع</h3>
+                    <a href="{% url 'catalog:home' %}">صفحه اصلی</a>
+                    <a href="{% url 'orders:history' %}">سفارش‌های من</a>
+                    <a href="{% url 'cart:detail' %}">سبد خرید</a>
+                </nav>
+                <nav class="footer-col">
+                    <h3>راهنما</h3>
+                    <a href="{% url 'catalog:faq' %}">پرسش‌های متداول</a>
+                    <a href="{% url 'catalog:returns' %}">رویه بازگرداندن کالا</a>
+                    <a href="{% url 'catalog:privacy' %}">حریم خصوصی</a>
+                </nav>
+                <div class="footer-col">
+                    <h3>تماس با ما</h3>
+                    <a href="tel:02112345678"><i class="ri-phone-line"></i> ۰۲۱-۱۲۳۴۵۶۷۸</a>
+                    <a href="#"><i class="ri-mail-line"></i> info@k2.shop</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© ۱۴۰۶ — کلیه حقوق برای فروشگاه k2mod محفوظ است.</p>
+                <p class="footer-credit">طراحی و توسعه توسط
+                    <a href="https://github.com/alisamadzadeh46" target="_blank" rel="noopener noreferrer">alisamadzadeh</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script src="{% static 'js/carousel.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,51 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}کدهای تخفیف | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>کدهای تخفیف</h1><p>مدیریت کدهای تخفیف فروشگاه</p></div>
+        <a href="{% url 'dashboard:coupon_add' %}" class="btn btn-primary"><i class="ri-add-line"></i> افزودن کد تخفیف</a>
+    </div>
+
+    <div class="db-card">
+        <div class="db-card-body" style="padding:0;">
+            <table class="data-table">
+                <thead><tr><th>کد</th><th>نوع</th><th>مقدار</th><th>بازه اعتبار</th><th>استفاده</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                <tbody>
+                    {% for coupon in coupons %}
+                        <tr>
+                            <td><strong>{{ coupon.code }}</strong></td>
+                            <td>{{ coupon.get_discount_type_display }}</td>
+                            <td>
+                                {% if coupon.discount_type == "percent" %}{{ coupon.percent|persian_digits }}٪
+                                {% else %}{{ coupon.amount|toman }} تومان{% endif %}
+                            </td>
+                            <td style="font-size:12.5px;">
+                                {% if coupon.valid_from %}از {{ coupon.valid_from|jalali }}{% endif %}
+                                {% if coupon.valid_until %}<br>تا {{ coupon.valid_until|jalali }}{% endif %}
+                                {% if not coupon.valid_from and not coupon.valid_until %}—{% endif %}
+                            </td>
+                            <td>{{ coupon.used_count|persian_digits }}{% if coupon.max_uses %} / {{ coupon.max_uses|persian_digits }}{% endif %}</td>
+                            <td>
+                                {% if coupon.is_valid %}
+                                    <span class="status-badge active">فعال</span>
+                                {% else %}
+                                    <span class="status-badge low">غیرفعال</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'dashboard:coupon_edit' coupon.pk %}" class="action-btn edit" title="ویرایش"><i class="ri-edit-line"></i></a>
+                                    <a href="{% url 'dashboard:coupon_delete' coupon.pk %}" class="action-btn delete" title="حذف"><i class="ri-delete-bin-line"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7">هنوز کد تخفیفی ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

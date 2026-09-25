@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static persian %}
+{% block title %}سبد خرید | k2mod{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/cart.css' %}">{% endblock %}
+
+{% block content %}
+    <div class="cart-page">
+        <h1 class="cart-page-title"><i class="ri-shopping-cart-2-line"></i> سبد خرید</h1>
+
+        {% if cart.items.all %}
+            <div class="cart-page-layout">
+                <div class="cart-items-list">
+                    {% for item in cart.items.all %}
+                        <div class="cart-row">
+                            <a href="{{ item.product.get_absolute_url }}" class="cart-row-img">
+                                {% if item.product.primary_image %}
+                                    <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <i class="ri-image-line"></i>
+                                {% endif %}
+                            </a>
+                            <div class="cart-row-main">
+                                <a href="{{ item.product.get_absolute_url }}" class="cart-row-name">{{ item.product.name }}</a>
+                                {% if item.color or item.size %}
+                                    <div class="cart-item-variants">
+                                        {% if item.color %}<span class="cart-item-badge"><span class="cart-swatch" style="background: {{ item.color.hex_code }}"></span>{{ item.color.name }}</span>{% endif %}
+                                        {% if item.size %}<span class="cart-item-badge">سایز {{ item.size.name }}</span>{% endif %}
+                                    </div>
+                                {% endif %}
+                                <div class="cart-row-unit">قیمت واحد: {{ item.product.price|toman }} تومان</div>
+                            </div>
+                            <div class="cart-row-qty">تعداد: {{ item.quantity|persian_digits }}</div>
+                            <div class="cart-row-subtotal">{{ item.subtotal|toman }} تومان</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <aside class="summary-card">
+                    <h2>خلاصه سفارش</h2>
+                    <div class="row"><span>تعداد اقلام</span><span>{{ cart.total_items|persian_digits }}</span></div>
+                    <div class="row"><span>مبلغ کالاها</span><span>{{ cart.total_price|toman }} تومان</span></div>
+                    <div class="row total"><span>مبلغ قابل پرداخت</span><span>{{ cart.total_price|toman }} تومان</span></div>
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-primary cart-checkout-btn">
+                        ادامه و تسویه حساب <i class="ri-arrow-left-line"></i>
+                    </a>
+                </aside>
+            </div>
+        {% else %}
+            <div class="cart-empty-page">
+                <i class="ri-shopping-cart-2-line"></i>
+                <p>سبد خرید شما خالی است.</p>
+                <a href="{% url 'catalog:home' %}" class="btn btn-primary">شروع خرید</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

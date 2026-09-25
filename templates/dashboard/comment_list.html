@@ -1,0 +1,73 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% load persian %}
+{% block title %}دیدگاه‌ها | پنل مدیریت{% endblock %}
+
+{% block dashboard_content %}
+    <div class="dashboard-header">
+        <div><h1>مدیریت دیدگاه‌ها</h1><p>دیدگاه‌های مشتریان را تأیید، پاسخ یا حذف کنید</p></div>
+    </div>
+
+    <div class="db-filter-tabs">
+        <a href="?filter=all" class="{% if current_filter == 'all' %}active{% endif %}">همه</a>
+        <a href="?filter=pending" class="{% if current_filter == 'pending' %}active{% endif %}">
+            در انتظار تأیید {% if pending_count %}<span class="db-badge">{{ pending_count|persian_digits }}</span>{% endif %}
+        </a>
+        <a href="?filter=approved" class="{% if current_filter == 'approved' %}active{% endif %}">تأییدشده ({{ approved_count|persian_digits }})</a>
+    </div>
+
+    <div class="db-card">
+        <div class="db-card-body">
+            {% for comment in comments %}
+                <div class="db-comment {% if not comment.is_approved %}is-pending{% endif %}">
+                    <div class="db-comment-head">
+                        <div>
+                            <strong>{{ comment.user.get_full_name }}</strong>
+                            {% if comment.is_approved %}
+                                <span class="db-chip approved"><i class="ri-checkbox-circle-line"></i> منتشرشده</span>
+                            {% else %}
+                                <span class="db-chip pending"><i class="ri-time-line"></i> در انتظار تأیید</span>
+                            {% endif %}
+                            <span class="db-comment-meta">روی «{{ comment.product.name }}» · {{ comment.created_at|jalali }}</span>
+                        </div>
+                        <div class="db-comment-tools">
+                            {% if not comment.is_approved %}
+                                <form method="post" action="{% url 'dashboard:comment_approve' comment.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary db-approve-btn"><i class="ri-check-line"></i> تأیید</button>
+                                </form>
+                            {% endif %}
+                            <form method="post" action="{% url 'dashboard:comment_delete' comment.id %}" onsubmit="return confirm('این دیدگاه حذف شود؟');">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn delete" title="حذف"><i class="ri-delete-bin-line"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <p class="db-comment-body">{{ comment.body }}</p>
+
+                    {% for reply in comment.replies.all %}
+                        <div class="db-comment-reply">
+                            <span class="db-reply-badge">پاسخ فروشگاه · {{ reply.created_at|jalali }}</span>
+                            <p>{{ reply.body }}</p>
+                        </div>
+                    {% empty %}
+                        <form method="post" action="{% url 'dashboard:comment_reply' comment.id %}" class="db-reply-form">
+                            {% csrf_token %}
+                            {{ reply_form.body }}
+                            <button type="submit" class="btn btn-outline">ارسال پاسخ</button>
+                        </form>
+                    {% endfor %}
+                </div>
+            {% empty %}
+                <p style="color: var(--db-muted); padding: 20px; text-align: center;">دیدگاهی در این بخش وجود ندارد.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}<a href="?filter={{ current_filter }}&page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+            <span class="current">{{ page_obj.number|persian_digits }} از {{ page_obj.paginator.num_pages|persian_digits }}</span>
+            {% if page_obj.has_next %}<a href="?filter={{ current_filter }}&page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
