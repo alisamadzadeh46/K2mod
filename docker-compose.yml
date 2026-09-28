@@ -3,9 +3,9 @@ services:
     image: postgres:18-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-k2_store}
+      POSTGRES_USER: ${DB_USER:-k2_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
@@ -19,6 +19,9 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      DB_NAME: ${DB_NAME:-k2_store}
+      DB_USER: ${DB_USER:-k2_user}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
       DB_HOST: db
       DB_PORT: "5432"
       BEHIND_PROXY: "True"
