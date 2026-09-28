@@ -49,33 +49,73 @@ k2mod is an online store for gifts, cosmetics, clothing and accessories, built w
 
 ### Tech stack
 
-- **Backend:** Python, Django 6
-- **Database:** PostgreSQL
+- **Backend:** Python 3.14, Django 6.1
+- **Database:** PostgreSQL 18
 - **Frontend:** HTML, CSS, JavaScript (no frontend framework), Django templates
+- **Server:** Docker, Nginx, Gunicorn
 - **Icons & font:** Remix Icon, Vazirmatn
 - **Other packages:** django-environ, django-axes, argon2-cffi, Pillow, jdatetime, arabic-reshaper, python-bidi
-- **Deployment:** Gunicorn
 
-### Running it locally
+### Running with Docker
 
-Requirements: Python 3.12+ and PostgreSQL.
+This is the easiest way. You only need Docker and Docker Compose.
+
+```
+browser → nginx (static, media) → gunicorn + django → postgresql
+```
 
 ```bash
 git clone https://github.com/alisamadzadeh46/k2mod.git
 cd k2mod
-
-python -m venv venv
-source venv/bin/activate        # on Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-Create a PostgreSQL database and set up your `.env`:
-
-```bash
 cp .env.example .env            # on Windows: copy .env.example .env
 ```
 
-Fill in `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` and `DJANGO_ADMIN_URL_PREFIX`.
+Open `.env` and set at least these:
+
+```
+DEBUG=False
+SECRET_KEY=a-long-random-string
+DB_PASSWORD=a-strong-password
+DJANGO_ADMIN_URL_PREFIX=something-hard-to-guess
+USE_HTTPS=False
+```
+
+`USE_HTTPS=False` is only for testing on your own machine without SSL.
+
+Then:
+
+```bash
+docker compose up -d --build
+docker compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py seed_demo_data   # optional
+```
+
+The site is on http://localhost. If port 80 is busy, change `NGINX_PORT` in `.env`.
+
+Migrations and `collectstatic` run automatically every time the container starts. Database, uploaded files and static files are kept in Docker volumes.
+
+Useful commands:
+
+```bash
+docker compose logs -f web      # logs
+docker compose down             # stop
+docker compose up -d --build    # rebuild after changing the code
+```
+
+**On a real server:** set `USE_HTTPS=True`, put your domain in `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`, and use `nginx/ssl.conf.example` for the SSL certificate. The steps are written at the top of that file.
+
+### Running without Docker
+
+Requirements: Python 3.12+ and PostgreSQL.
+
+```bash
+python -m venv venv
+source venv/bin/activate        # on Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Create a PostgreSQL database, fill in `SECRET_KEY`, `DB_USER`, `DB_PASSWORD` and `DJANGO_ADMIN_URL_PREFIX` in `.env` (keep `DEBUG=True`), then:
 
 ```bash
 python manage.py migrate
@@ -84,12 +124,6 @@ python manage.py runserver
 ```
 
 Open http://127.0.0.1:8000. The admin panel is at `/panel-control/` (can be changed with `DASHBOARD_URL_PREFIX`).
-
-To add some sample products:
-
-```bash
-python manage.py seed_demo_data
-```
 
 ### Screenshots
 
@@ -127,6 +161,10 @@ apps/
 k2_store/      settings and main urls
 templates/
 static/
+docker/        entrypoint and gunicorn config
+nginx/         nginx config (http and https example)
+Dockerfile
+docker-compose.yml
 ```
 
 ---
@@ -172,41 +210,95 @@ k2mod  فروشگاه اینترنتی برای فروش کادو، لوازم �
 
 ### تکنولوژی‌های استفاده‌شده
 
-- **بک‌اند:** Python و Django 6
-- **دیتابیس:** PostgreSQL
+- **بک‌اند:** Python 3.14 و Django 6.1
+- **دیتابیس:** PostgreSQL 18
 - **فرانت‌اند:** HTML، CSS، JavaScript (بدون فریم‌ورک) و قالب‌های جنگو
+- **سرور:** Docker، Nginx و Gunicorn
 - **آیکون و فونت:** Remix Icon و وزیرمتن
 - **پکیج‌های دیگه:** django-environ، django-axes، argon2-cffi، Pillow، jdatetime، arabic-reshaper، python-bidi
-- **دیپلوی:** Gunicorn
 
-### نحوه‌ی اجرا
+### اجرا با داکر
+
+ساده‌ترین روش اجرا همینه و فقط Docker و Docker Compose لازمه.
+
+</div>
+
+```
+browser → nginx (static, media) → gunicorn + django → postgresql
+```
+
+```bash
+git clone https://github.com/alisamadzadeh46/k2mod.git
+cd k2mod
+copy .env.example .env          # on Linux/macOS: cp .env.example .env
+```
+
+<div dir="rtl">
+
+فایل `.env` رو باز کنید و حداقل این‌ها رو پر کنید:
+
+</div>
+
+```
+DEBUG=False
+SECRET_KEY=a-long-random-string
+DB_PASSWORD=a-strong-password
+DJANGO_ADMIN_URL_PREFIX=something-hard-to-guess
+USE_HTTPS=False
+```
+
+<div dir="rtl">
+
+`USE_HTTPS=False` فقط برای تست روی سیستم خودتون و بدون SSL هست.
+
+بعد:
+
+</div>
+
+```bash
+docker compose up -d --build
+docker compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py seed_demo_data   # optional
+```
+
+<div dir="rtl">
+
+سایت روی http://localhost بالا میاد. اگه پورت 80 اشغاله، `NGINX_PORT` رو توی `.env` عوض کنید.
+
+مایگریشن‌ها و `collectstatic` هر بار که کانتینر بالا میاد خودکار اجرا می‌شن. دیتابیس، فایل‌های آپلودی و فایل‌های استاتیک توی volumeهای داکر نگه داشته می‌شن.
+
+دستورهای کاربردی:
+
+</div>
+
+```bash
+docker compose logs -f web      # logs
+docker compose down             # stop
+docker compose up -d --build    # rebuild after changing the code
+```
+
+<div dir="rtl">
+
+**روی سرور واقعی:** `USE_HTTPS=True` بذارید، دامنه رو توی `ALLOWED_HOSTS` و `CSRF_TRUSTED_ORIGINS` وارد کنید و برای گواهی SSL از فایل `nginx/ssl.conf.example` استفاده کنید. مراحلش بالای همون فایل نوشته شده.
+
+اگه موقع build به Docker Hub دسترسی ندارید، باید یه registry mirror توی تنظیمات داکر اضافه کنید.
+
+### اجرا بدون داکر
 
 پیش‌نیازها: Python 3.12 به بالا و PostgreSQL
 
 </div>
 
 ```bash
-git clone https://github.com/alisamadzadeh46/k2mod.git
-cd k2mod
-
 python -m venv venv
 venv\Scripts\activate           # on Linux/macOS: source venv/bin/activate
 pip install -r requirements.txt
-```
-
-<div dir="rtl">
-
-یه دیتابیس PostgreSQL بسازید و فایل `.env` رو از روی `.env.example` درست کنید:
-
-</div>
-
-```bash
 copy .env.example .env          # on Linux/macOS: cp .env.example .env
 ```
 
 <div dir="rtl">
 
-مقدارهای `SECRET_KEY`، `DB_NAME`، `DB_USER`، `DB_PASSWORD` و `DJANGO_ADMIN_URL_PREFIX` رو پر کنید.
+یه دیتابیس PostgreSQL بسازید، مقدارهای `SECRET_KEY`، `DB_USER`، `DB_PASSWORD` و `DJANGO_ADMIN_URL_PREFIX` رو توی `.env` پر کنید (`DEBUG=True` بمونه) و بعد:
 
 </div>
 

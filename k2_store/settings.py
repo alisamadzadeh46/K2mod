@@ -15,7 +15,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 # with scheme, e.g. https://example.com
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
-DASHBOARD_URL_PREFIX = env("DASHBOARD_URL_PREFIX", default="panel-control")
+DASHBOARD_URL_PREFIX = env("DASHBOARD_URL_PREFIX", default="") or "panel-control"
 
 DJANGO_ADMIN_URL_PREFIX = env("DJANGO_ADMIN_URL_PREFIX")
 
@@ -111,6 +111,12 @@ PASSWORD_HASHERS = [
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # hours
 AXES_LOCKOUT_PARAMETERS = ["username", "ip_address"]
+AXES_CLIENT_IP_CALLABLE = "apps.common.utils.client_ip"
+# the login form field is "username" even though USERNAME_FIELD is phone_number
+AXES_USERNAME_FORM_FIELD = "username"
+
+# True when running behind nginx (docker-compose sets it)
+BEHIND_PROXY = env.bool("BEHIND_PROXY", default=False)
 
 
 # Internationalization
@@ -124,6 +130,12 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+if not DEBUG:
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"},
+    }
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -160,12 +172,16 @@ X_FRAME_OPTIONS = "DENY"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 
+# set to False only when testing production mode over plain http
+USE_HTTPS = env.bool("USE_HTTPS", default=True)
+
 if not DEBUG:
     # behind nginx
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    if USE_HTTPS:
+        SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+        SESSION_COOKIE_SECURE = True
+        CSRF_COOKIE_SECURE = True
+        SECURE_HSTS_SECONDS = 31536000
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
